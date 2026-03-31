@@ -3,14 +3,12 @@ import "./globals.css";
 import ClientLayout from "./components/ClientLayout";
 import Footer from "./components/Footer";
 
-export const dynamic = "force-dynamic";
-
 const BACKEND = process.env.BACKEND_URL || "http://localhost:5000";
 const SITE_URL = "https://tabaraktech.com";
 
 async function getCompany() {
   try {
-    const r = await fetch(`${BACKEND}/api/admin/company`, { next: { revalidate: 60, tags: ["company"] } });
+    const r = await fetch(`${BACKEND}/api/admin/company`, { next: { revalidate: 3600, tags: ["company"] } });
     return r.ok ? r.json() : {};
   } catch {
     return {};
@@ -22,9 +20,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const siteName = c.nameAr || "مؤسسة تبارك التقنية الذكية";
   const description = c.details || "مؤسسة تبارك التقنية الذكية - أجهزة إلكترونية بالأقساط داخل المملكة العربية السعودية. أفضل الأسعار على الجوالات، اللابتوبات، الأجهزة اللوحية والإكسسوارات.";
+
+  // يجب أن يكون URL اللوجو مطلقاً دائماً لكي يعمل Open Graph
   const logoUrl = c.logo
-    ? (c.logo.startsWith("http") ? c.logo : `${BACKEND}${c.logo}`)
-    : `${SITE_URL}/og-default.png`;
+    ? (c.logo.startsWith("http") ? c.logo : `${SITE_URL}/api/tabarak${c.logo}`)
+    : `${SITE_URL}/og-image.png`;
 
   return {
     metadataBase: new URL(SITE_URL),
@@ -55,22 +55,21 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName,
       title: siteName,
       description,
-      images: [{ url: logoUrl, width: 1200, height: 630, alt: siteName }],
+      images: [
+        {
+          url: logoUrl,
+          width: 1200,
+          height: 630,
+          alt: siteName,
+          type: "image/png",
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: siteName,
       description,
-      images: [logoUrl],
-    },
-    icons: {
-      icon: [
-        { url: logoUrl, sizes: "32x32", type: "image/png" },
-        { url: logoUrl, sizes: "64x64", type: "image/png" },
-        { url: logoUrl, sizes: "192x192", type: "image/png" },
-      ],
-      shortcut: [{ url: logoUrl, sizes: "64x64" }],
-      apple: [{ url: logoUrl, sizes: "180x180" }],
+      images: [{ url: logoUrl, alt: siteName }],
     },
     alternates: {
       canonical: SITE_URL,
