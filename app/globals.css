@@ -34,7 +34,7 @@ body.checkout-page {
 .cart-btn {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #1F6F8B, #0F4C6E);
+  background: #90EE90;
   color: white;
   font-weight: 700;
   border-radius: 12px;
@@ -45,7 +45,7 @@ body.checkout-page {
   justify-content: center;
   gap: 5px;
   font-size: 0.75rem;
-  box-shadow: 0 3px 10px rgba(15, 76, 110, 0.35);
+  box-shadow: 0 3px 10px rgba(87, 154, 87, 0.35);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 @media (min-width: 640px) {
@@ -62,7 +62,7 @@ body.checkout-page {
     padding: 12px 0;
     gap: 8px;
     font-size: 0.95rem;
-    box-shadow: 0 4px 15px rgba(15, 76, 110, 0.35);
+    box-shadow: 0 4px 15px rgba(87, 154, 87, 0.35);
   }
 }
 .cart-btn::before {
@@ -82,12 +82,12 @@ body.checkout-page {
 }
 .cart-btn:hover {
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 25px rgba(15, 76, 110, 0.5);
+  box-shadow: 0 8px 25px rgba(87, 154, 87, 0.5);
 }
 .cart-btn:active { transform: scale(0.96); }
 .cart-btn.added {
-  background: linear-gradient(135deg, #1F6F8B, #0F4C6E);
-  box-shadow: 0 4px 15px rgba(15, 76, 110, 0.4);
+  background: #90EE90;
+  box-shadow: 0 4px 15px rgba(87, 154, 87, 0.4);
   animation: pop 0.3s ease;
 }
 @keyframes pop {

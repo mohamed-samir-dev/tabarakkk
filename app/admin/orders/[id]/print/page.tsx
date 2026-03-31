@@ -32,6 +32,7 @@ export default function PrintOrderPage() {
   if (!order) return <div style={{ textAlign: "center", padding: 40 }}>جاري التحميل...</div>;
 
   const style = `
+    html, body { background-color: white !important; background: white !important; }
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     thead { display: table-header-group; }
     tfoot { display: table-row-group; }
@@ -46,13 +47,14 @@ export default function PrintOrderPage() {
     }
     @media print {
       @page { size: A4; margin: 5mm; }
+      html, body { background-color: white !important; background: white !important; }
       body { font-size: 9px !important; }
       td, th { padding: 2px 4px !important; }
       img[alt="header"] { width: 100% !important; height: auto !important; max-height: 120px !important; object-fit: contain; }
       img[alt="footer"] { width: 100% !important; height: auto !important; max-height: 90px !important; object-fit: contain; }
       .installments-section { margin-top: 8px !important; }
       p { margin: 0 !important; line-height: 1.4 !important; }
-      div { padding: 0 !important; }
+      div { padding: 0 !important; background-color: white !important; }
       table { margin-bottom: 6px !important; }
     }
   `;
@@ -61,7 +63,7 @@ export default function PrintOrderPage() {
   const date = new Date(order.createdAt).toLocaleDateString("en-GB");
 
   return (
-    <div style={{ fontFamily: "Arial, sans-serif", padding: 24, maxWidth: 900, margin: "0 auto", position: "relative" }}>
+    <div style={{ fontFamily: "Arial, sans-serif", padding: 24, maxWidth: 900, margin: "0 auto", position: "relative", backgroundColor: "white", minHeight: "100vh", background: "white" }}>
       {company.stamp && (
         <img
           src={company.stamp}
