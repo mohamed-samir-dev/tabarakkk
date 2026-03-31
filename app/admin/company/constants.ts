@@ -52,6 +52,7 @@ export const toFullUrl = (url: string) => {
 
 export const withCacheBust = (url: string) => {
   if (!url) return url;
+  if (url.includes("cloudinary.com")) return url;
   const base = url.split("?")[0];
   return `${base}?t=${Date.now()}`;
 };
