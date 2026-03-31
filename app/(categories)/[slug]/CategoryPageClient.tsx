@@ -7,8 +7,6 @@ import ProductCard from "../../components/products/ProductCard";
 import type { Product } from "../../components/products/types";
 import { slugConfigs } from "../../lib/categoryConfig";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
 function filterProducts(products: Product[], slug: string): Product[] {
   const config = slugConfigs[slug];
   if (!config) return products;
@@ -37,7 +35,7 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
     if (!slug) return;
     const brand = config?.filters.brand ?? "";
     const query = brand ? `?brand=${encodeURIComponent(brand)}` : "";
-    fetch(`${API}/api/products${query}`)
+    fetch(`/api/products${query}`)
       .then((r) => r.json())
       .then((data: Product[]) => setProducts(filterProducts(data, slug)))
       .catch(console.error)

@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
 
   // Send Telegram
   const text = [
-    `🏪 طلب لـ متجر مؤسسة بصمة هاتفي المعتمد`,
+    `🏪 طلب لـ متجر مؤسسة تبارك التقنية الذكية`,
     `🔢 رقم الطلب: #${orderId}`,
     ``,
     `💰 Total Amount: ${total} SAR`,

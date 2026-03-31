@@ -5,8 +5,6 @@ import Link from "next/link";
 import ProductCard from "../../components/products/ProductCard";
 import type { Product } from "../../components/products/types";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
 export default function AudioClient() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +12,7 @@ export default function AudioClient() {
   const ITEMS_PER_PAGE = 12;
 
   useEffect(() => {
-    fetch(`${API}/api/products`)
+    fetch(`/api/products`)
       .then((r) => r.json())
       .then((data: Product[]) => {
         const filtered = data.filter((p) =>
