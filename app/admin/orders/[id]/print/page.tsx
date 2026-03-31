@@ -36,7 +36,7 @@ export default function PrintOrderPage() {
     thead { display: table-header-group; }
     tfoot { display: table-row-group; }
     .print-two-col td { width: 50%; }
-    .installments-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .installments-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; }
     .table-scroll { overflow-x: auto; }
     @media (max-width: 600px) {
       .print-two-col { display: block; }
@@ -45,11 +45,15 @@ export default function PrintOrderPage() {
       .installments-grid { grid-template-columns: 1fr; }
     }
     @media print {
-      @page { size: A4; margin: 10mm; }
-      body { font-size: 11px !important; }
-      td, th { padding: 4px 6px !important; }
-      img[alt="header"], img[alt="footer"] { width: 100% !important; max-height: none !important; }
-      .installments-section { margin-top: 24px !important; page-break-before: auto; }
+      @page { size: A4; margin: 5mm; }
+      body { font-size: 9px !important; }
+      td, th { padding: 2px 4px !important; }
+      img[alt="header"] { width: 100% !important; height: auto !important; max-height: 120px !important; object-fit: contain; }
+      img[alt="footer"] { width: 100% !important; height: auto !important; max-height: 90px !important; object-fit: contain; }
+      .installments-section { margin-top: 8px !important; }
+      p { margin: 0 !important; line-height: 1.4 !important; }
+      div { padding: 0 !important; }
+      table { margin-bottom: 6px !important; }
     }
   `;
 
@@ -196,7 +200,7 @@ export default function PrintOrderPage() {
           return { num: i + 1, amount: fin.monthlyPayment, date: d.toLocaleDateString("en-GB") };
         });
         const chunks: typeof installments[] = [];
-        for (let i = 0; i < installments.length; i += 5) chunks.push(installments.slice(i, i + 5));
+        for (let i = 0; i < installments.length; i += 6) chunks.push(installments.slice(i, i + 6));
         const remaining = (fin.total - fin.downPayment).toFixed(2);
         return (
           <div className="installments-section" style={{ border: "2px solid #9ca3af", borderRadius: 8, padding: 12, backgroundColor: "#f3f4f6", marginTop: 16 }}>
