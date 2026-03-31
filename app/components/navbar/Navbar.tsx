@@ -110,15 +110,15 @@ export default function Navbar() {
           <div className="flex items-center gap-0.5 sm:gap-2 md:gap-3">
             <button
               aria-label="بحث"
-              className="p-1 sm:p-2 text-[#0F4C6E] hover:text-[#7CC043] hover:bg-[#E6F2F8] rounded-full transition-colors"
+              className="p-1.5 sm:p-2 text-[#0F4C6E] hover:text-[#7CC043] hover:bg-[#E6F2F8] rounded-full transition-colors"
               onClick={() => setSearchOpen((v) => !v)}
             >
               <SearchIcon />
             </button>
-            <Link href="/cart" aria-label="السلة" className="p-1 sm:p-2 text-[#0F4C6E] hover:text-[#7CC043] hover:bg-[#E6F2F8] rounded-full transition-colors relative">
+            <Link href="/cart" aria-label="السلة" className="p-1.5 sm:p-2 text-[#0F4C6E] hover:text-[#7CC043] hover:bg-[#E6F2F8] rounded-full transition-colors relative">
               <CartIcon />
               {mounted && itemCount > 0 && (
-                <span className="absolute -top-0.5 -left-0.5 bg-red-500 text-white text-[10px] font-bold min-w-[16px] h-[16px] flex items-center justify-center rounded-full px-0.5">
+                <span className="absolute -top-0.5 -left-0.5 bg-red-500 text-white text-[11px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-0.5">
                   {itemCount}
                 </span>
               )}

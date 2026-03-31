@@ -6,7 +6,7 @@ import Footer from "./components/Footer";
 export const dynamic = "force-dynamic";
 
 const BACKEND = process.env.BACKEND_URL || "http://localhost:5000";
-const SITE_URL = "https://www.pasmthatfee.com";
+const SITE_URL = "https://tabaraktech.com";
 
 async function getCompany() {
   try {
@@ -20,8 +20,8 @@ async function getCompany() {
 export async function generateMetadata(): Promise<Metadata> {
   const c = await getCompany();
 
-  const siteName = c.nameAr || "بصمة هاتفي المعتمد";
-  const description = c.details || "متجر بصمة هاتفي المعتمد - أجهزة إلكترونية بالأقساط داخل المملكة العربية السعودية. أفضل الأسعار على الجوالات، اللابتوبات، الأجهزة اللوحية والإكسسوارات.";
+  const siteName = c.nameAr || "مؤسسة تبارك التقنية الذكية";
+  const description = c.details || "مؤسسة تبارك التقنية الذكية - أجهزة إلكترونية بالأقساط داخل المملكة العربية السعودية. أفضل الأسعار على الجوالات، اللابتوبات، الأجهزة اللوحية والإكسسوارات.";
   const logoUrl = c.logo
     ? (c.logo.startsWith("http") ? c.logo : `${BACKEND}${c.logo}`)
     : `${SITE_URL}/og-default.png`;
@@ -35,8 +35,8 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     keywords: [
       siteName,
-      c.nameEn || "Pasmthatfee",
-      "أقساط", "جوالات", "لابتوب", "أجهزة إلكترونية",
+      c.nameEn || "Tabarak Tech",
+      "تبارك", "تبارك التقنية", "أقساط", "جوالات", "لابتوب", "أجهزة إلكترونية",
       "سامسونج", "آبل", "أيفون", "شاومي",
       "السعودية", "الرياض", "جدة",
     ],

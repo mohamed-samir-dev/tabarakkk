@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 
 const ALLOWED_BACKENDS = [
+  "http://localhost:5000",
   "https://tabaraktech.com/api/tabarak",
   "https://api2.tabaraktech.com",
   "https://api2.tabaraktech.com/api",

@@ -2,7 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { getBackend } from "../_lib";
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "بيانات غير صحيحة" }, { status: 400 });
+  }
+
   const backendUrl = getBackend();
 
   let res: Response;
@@ -16,16 +22,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "تعذر الاتصال بالخادم" }, { status: 502 });
   }
 
-  const contentType = res.headers.get("content-type") || "";
-  if (!contentType.includes("application/json")) {
+  let data: unknown;
+  try {
+    data = await res.json();
+  } catch {
     return NextResponse.json({ error: "خطأ في الخادم" }, { status: 502 });
   }
 
-  const data = await res.json();
   const response = NextResponse.json(data, { status: res.status });
 
   const setCookie = res.headers.get("set-cookie");
-  if (setCookie) response.headers.set("set-cookie", setCookie);
+  if (setCookie) {
+    try {
+      response.headers.set("set-cookie", setCookie);
+    } catch {
+      // ignore header errors
+    }
+  }
 
   return response;
 }

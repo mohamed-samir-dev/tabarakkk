@@ -19,7 +19,7 @@ async function getCompany() {
 
 export default async function Home() {
   const c = await getCompany();
-  const siteName = c.nameAr || "بصمة هاتفي المعتمد";
+  const siteName = c.nameAr || "مؤسسة تبارك التقنية الذكية";
   const logoUrl = c.logo
     ? (c.logo.startsWith("http") ? c.logo : `${BACKEND}${c.logo}`)
     : "";
@@ -28,7 +28,7 @@ export default async function Home() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: siteName,
-    alternateName: c.nameEn || "Pasmthatfee",
+    alternateName: c.nameEn || "Tabarak Tech",
     url: SITE_URL,
     logo: logoUrl,
     contactPoint: [
