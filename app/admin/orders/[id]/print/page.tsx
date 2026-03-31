@@ -49,6 +49,7 @@ export default function PrintOrderPage() {
       body { font-size: 11px !important; }
       td, th { padding: 4px 6px !important; }
       img[alt="header"], img[alt="footer"] { width: 100% !important; max-height: none !important; }
+      .installments-section { margin-top: 24px !important; page-break-before: auto; }
     }
   `;
 
@@ -157,6 +158,12 @@ export default function PrintOrderPage() {
               <td style={{ padding: "6px 8px", textAlign: "right" }}>{fin.downPayment.toFixed(2)} ريال</td>
             </tr>
           )}
+          {order.installmentType === "installment" && (
+            <tr style={{ backgroundColor: "#dbeafe", fontWeight: "bold" }}>
+              <td colSpan={3} style={{ padding: "6px 8px", textAlign: "right", borderLeft: "1px solid #e5e7eb" }}>المتبقي</td>
+              <td style={{ padding: "6px 8px", textAlign: "right" }}>{(fin.total - fin.downPayment).toFixed(2)} ريال</td>
+            </tr>
+          )}
         </tfoot>
       </table>
       </div>
@@ -192,7 +199,7 @@ export default function PrintOrderPage() {
         for (let i = 0; i < installments.length; i += 5) chunks.push(installments.slice(i, i + 5));
         const remaining = (fin.total - fin.downPayment).toFixed(2);
         return (
-          <div style={{ border: "2px solid #9ca3af", borderRadius: 8, padding: 12, backgroundColor: "#f3f4f6" }}>
+          <div className="installments-section" style={{ border: "2px solid #9ca3af", borderRadius: 8, padding: 12, backgroundColor: "#f3f4f6", marginTop: 16 }}>
             <div className="installments-grid">
               {chunks.map((chunk, ci) => (
                 <table key={ci} style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #d1d5db", fontSize: 13 }}>
@@ -215,20 +222,7 @@ export default function PrintOrderPage() {
                 </table>
               ))}
             </div>
-            <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 16, border: "1px solid #d1d5db", fontSize: 15 }}>
-              <thead>
-                <tr style={{ backgroundColor: "#3b82f6", color: "white" }}>
-                  <th style={{ padding: "8px 16px", textAlign: "right", borderLeft: "1px solid #60a5fa" }}>المتبقي</th>
-                  <th style={{ padding: "8px 16px", textAlign: "center" }}>المبلغ</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr style={{ backgroundColor: "white" }}>
-                  <td style={{ padding: "10px 16px", textAlign: "right", borderLeft: "1px solid #e5e7eb", fontWeight: "bold", direction: "rtl" }}>المتبقي</td>
-                  <td style={{ padding: "10px 16px", textAlign: "center", fontWeight: "bold" }}>{remaining} ريـــال</td>
-                </tr>
-              </tbody>
-            </table>
+
           </div>
         );
       })()}
