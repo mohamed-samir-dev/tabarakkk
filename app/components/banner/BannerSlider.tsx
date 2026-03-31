@@ -27,7 +27,7 @@ export default function BannerSlider({ images }: { images: string[] }) {
 
   return (
     <section className="w-full flex justify-center py-6 px-4">
-      <div className="relative w-full max-w-5xl overflow-hidden rounded-2xl">
+      <div className="relative w-full max-w-7xl overflow-hidden rounded-2xl">
         <div
           className="flex transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(${current * 100}%)` }}
@@ -36,7 +36,7 @@ export default function BannerSlider({ images }: { images: string[] }) {
         >
           {images.map((src, i) => (
             <div key={i} className="min-w-full relative aspect-[1.8/1]">
-              <Image src={src} alt={`banner ${i + 1}`} fill className="object-cover" priority={i === 0} unoptimized />
+              <Image src={src} alt={`banner ${i + 1}`} fill className="object-contain" priority={i === 0} unoptimized />
             </div>
           ))}
         </div>
