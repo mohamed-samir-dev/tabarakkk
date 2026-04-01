@@ -174,7 +174,7 @@ export default function ProductGrid() {
   if (!products.length) return <p className="text-center text-gray-400 py-10">لا توجد منتجات حالياً</p>;
 
   return (
-    <section className="w-full bg-[#F5F7FA] py-6 sm:py-8 overflow-hidden">
+    <section className="w-full bg-white py-6 sm:py-8 overflow-hidden">
     <div className="max-w-6xl mx-auto px-3 sm:px-4">
       {orderedCategories.map((category, catIdx) => (
         <div key={category}>
