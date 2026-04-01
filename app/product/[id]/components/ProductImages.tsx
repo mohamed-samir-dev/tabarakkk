@@ -13,8 +13,8 @@ export default function ProductImages({ images, name, discountPercent = 0 }: Pro
   const [selectedImage, setSelectedImage] = useState(0);
 
   return (
-    <div className="bg-white rounded-2xl border border-[#B8D8EC] p-3 sm:p-6">
-      <div className="relative aspect-square bg-[#E6F2F8] rounded-xl overflow-hidden">
+    <div className="bg-white rounded-2xl  p-3 sm:p-6">
+      <div className="relative aspect-square bg-white rounded-xl overflow-hidden">
         {discountPercent > 0 && (
           <span className="absolute z-10 top-2 right-2 bg-red-500 text-white text-xs sm:text-sm font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full">
             {discountPercent}%-

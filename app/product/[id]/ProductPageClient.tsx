@@ -26,8 +26,8 @@ export default function ProductPageClient({ id, initialProduct }: { id: string; 
   const allImages = (product.images?.length ? product.images : product.image ? [product.image] : []).map(resolveImg);
 
   return (
-    <main className="min-h-screen bg-[#E6F2F8] pb-16" dir="rtl">
-      <div className="bg-[#E6F2F8] border-b border-[#B8D8EC] sticky top-0 z-30">
+    <main className="min-h-screen bg-white pb-16" dir="rtl">
+      <div className="bg-white border-b border-white sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex items-center gap-2 sm:gap-3">
           <button onClick={() => router.back()} className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full hover:bg-[#ddeef7] transition text-[#0F4C6E] shrink-0">
             <IoArrowForward size={20} />
