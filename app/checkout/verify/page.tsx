@@ -9,7 +9,7 @@ export default function VerifyPage() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [codeError, setCodeError] = useState(false);
   const [resent, setResent] = useState(false);
-  const [cooldown, setCooldown] = useState(0);
+  const [cooldown, setCooldown] = useState(60);
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [confirmed, setConfirmed] = useState(false);
   const [dbOrderId, setDbOrderId] = useState<string | null>(null);
@@ -27,6 +27,10 @@ export default function VerifyPage() {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const { customer } = useCartStore();
   const orderId = typeof window !== "undefined" ? localStorage.getItem("orderId") ?? "—" : "—";
+
+  useEffect(() => {
+    startCooldown();
+  }, []);
 
   // polling
   useEffect(() => {
