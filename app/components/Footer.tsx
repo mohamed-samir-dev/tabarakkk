@@ -111,16 +111,16 @@ export default async function Footer() {
             {qrSrc && (
               qrLink
                 ? <a href={qrLink} target="_blank" rel="noreferrer">
-                    <Image src={qrSrc} alt="qr" width={55} height={55} className="object-contain rounded border border-gray-200 bg-white p-1" style={{ width: "auto" }} />
+                    <Image src={qrSrc} alt="رمز QR للتواصل" width={55} height={55} className="object-contain rounded border border-gray-200 bg-white p-1" style={{ width: "auto" }} />
                   </a>
-                : <Image src={qrSrc} alt="qr" width={55} height={55} className="object-contain rounded border border-gray-200 bg-white p-1" style={{ width: "auto" }} />
+                : <Image src={qrSrc} alt="رمز QR للتواصل" width={55} height={55} className="object-contain rounded border border-gray-200 bg-white p-1" style={{ width: "auto" }} />
             )}
 
             {/* Footer Items */}
             {footerItems.map((item, i) => {
               const href = getHref(item);
               const el = (
-                <Image key={i} src={item.image} alt={`footer-item-${i}`} width={60} height={40}
+                <Image key={i} src={item.image} alt={`شعار شريك ${i + 1}`} width={60} height={40}
                   className="object-contain rounded" style={{ width: 60, height: 40 }} />
               );
               return href
@@ -132,18 +132,18 @@ export default async function Footer() {
             {img1 && (
               link1
                 ? <a href={link1} target="_blank" rel="noreferrer">
-                    <Image src={img1} alt="img1" width={90} height={60} className="object-contain rounded" style={{ width: 90, height: 60 }} />
+                    <Image src={img1} alt="وسيلة دفع معتمدة" width={90} height={60} className="object-contain rounded" style={{ width: 90, height: 60 }} />
                   </a>
-                : <Image src={img1} alt="img1" width={90} height={60} className="object-contain rounded" style={{ width: 90, height: 60 }} />
+                : <Image src={img1} alt="وسيلة دفع معتمدة" width={90} height={60} className="object-contain rounded" style={{ width: 90, height: 60 }} />
             )}
 
             {/* img2 */}
             {img2 && (
               link2
                 ? <a href={link2} target="_blank" rel="noreferrer">
-                    <Image src={img2} alt="img2" width={90} height={60} className="object-contain rounded" style={{ width: 90, height: 60 }} />
+                    <Image src={img2} alt="وسيلة دفع معتمدة" width={90} height={60} className="object-contain rounded" style={{ width: 90, height: 60 }} />
                   </a>
-                : <Image src={img2} alt="img2" width={90} height={60} className="object-contain rounded" style={{ width: 90, height: 60 }} />
+                : <Image src={img2} alt="وسيلة دفع معتمدة" width={90} height={60} className="object-contain rounded" style={{ width: 90, height: 60 }} />
             )}
           </div>
         </div>
@@ -152,8 +152,8 @@ export default async function Footer() {
       <div className="border-t border-[#1F6F8B] flex items-center justify-between max-w-6xl mx-auto px-4 py-4 text-xs text-[#E6F2F8]">
         <span>الحقوق محفوظة مؤسسة تبارك التقنية الذكية © 2026</span>
         <div className="flex gap-2">
-          <Image src="/cc975b.png" alt="cc" width={50} height={30} className="object-contain" style={{ width: "auto" }} />
-          <Image src="/mada975b.png" alt="mada" width={50} height={30} className="object-contain" style={{ width: "auto" }} />
+          <Image src="/cc975b.png" alt="بطاقة ائتمانية" width={50} height={30} className="object-contain" style={{ width: "auto" }} />
+          <Image src="/mada975b.png" alt="بطاقة مدى" width={50} height={30} className="object-contain" style={{ width: "auto" }} />
         </div>
       </div>
     </footer>

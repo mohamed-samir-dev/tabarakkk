@@ -4,7 +4,7 @@ import AudioClient from "./AudioClient";
 export const dynamic = "force-dynamic";
 
 const BACKEND = process.env.BACKEND_URL || "http://localhost:5000";
-const SITE_URL = "https://www.pasmthatfee.com";
+const SITE_URL = "https://tabaraktech.com";
 
 async function getCompany() {
   try {
@@ -17,10 +17,26 @@ async function getCompany() {
 
 export async function generateMetadata(): Promise<Metadata> {
   const company = await getCompany();
-  const siteName = company.nameAr || "بصمة هاتفي المعتمد";
+  const siteName = company.nameAr || "مؤسسة تبارك التقنية الذكية";
+  const title = `أجهزة صوت وسماعات | ${siteName}`;
+  const description = `تسوق سماعات أبل وأجهزة الصوت بأفضل الأسعار في ${siteName}. شحن سريع وضمان معتمد.`;
+  const logoUrl = company.logo
+    ? (company.logo.startsWith("http") ? company.logo : `${BACKEND}${company.logo}`)
+    : "";
   return {
-    title: `أجهزة صوت و سماعات | ${siteName}`,
-    description: `تسوق سماعات أبل وأجهزة الصوت بأفضل الأسعار في ${siteName}. شحن سريع وضمان معتمد.`,
+    title,
+    description,
+    keywords: ["سماعات", "أجهزة صوت", "AirPods", "أبل", "أقساط", "السعودية", siteName],
+    openGraph: {
+      type: "website",
+      url: `${SITE_URL}/audio`,
+      title,
+      description,
+      siteName,
+      locale: "ar_SA",
+      images: logoUrl ? [{ url: logoUrl, width: 1200, height: 630, alt: title }] : [],
+    },
+    twitter: { card: "summary_large_image", title, description, images: logoUrl ? [logoUrl] : [] },
     alternates: { canonical: `${SITE_URL}/audio` },
   };
 }

@@ -4,33 +4,39 @@ import { slugConfigs } from "./lib/categoryConfig";
 const BASE_URL = "https://tabaraktech.com";
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "https://tabaraktech.com/api/tabarak";
 
-const staticRoutes = [
-  "",
-  "/smartphones",
-  "/apple-watches",
-  "/audio",
-  "/playstation",
-  "/laptops",
-  "/tablets",
-  "/accessories",
-  "/games",
-  "/cart",
-  "/checkout",
+const staticRoutes: { path: string; priority: number; changeFreq: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
+  { path: "", priority: 1.0, changeFreq: "daily" },
+  { path: "/smartphones", priority: 0.9, changeFreq: "weekly" },
+  { path: "/laptops", priority: 0.9, changeFreq: "weekly" },
+  { path: "/tablets", priority: 0.9, changeFreq: "weekly" },
+  { path: "/audio", priority: 0.9, changeFreq: "weekly" },
+  { path: "/apple-watches", priority: 0.9, changeFreq: "weekly" },
+  { path: "/smart-watches", priority: 0.9, changeFreq: "weekly" },
+  { path: "/playstation", priority: 0.9, changeFreq: "weekly" },
+  { path: "/accessories", priority: 0.9, changeFreq: "weekly" },
+  { path: "/games", priority: 0.9, changeFreq: "weekly" },
+  { path: "/about", priority: 0.7, changeFreq: "monthly" },
+  { path: "/privacy", priority: 0.6, changeFreq: "monthly" },
+  { path: "/return-policy", priority: 0.6, changeFreq: "monthly" },
+  { path: "/payment", priority: 0.6, changeFreq: "monthly" },
+  { path: "/cart", priority: 0.5, changeFreq: "weekly" },
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const static_urls: MetadataRoute.Sitemap = staticRoutes.map((route) => ({
-    url: `${BASE_URL}${route}`,
-    changeFrequency: "weekly",
-    priority: route === "" ? 1 : 0.8,
-    lastModified: new Date(),
+  const now = new Date();
+
+  const static_urls: MetadataRoute.Sitemap = staticRoutes.map(({ path, priority, changeFreq }) => ({
+    url: `${BASE_URL}${path}`,
+    changeFrequency: changeFreq,
+    priority,
+    lastModified: now,
   }));
 
   const slug_urls: MetadataRoute.Sitemap = Object.keys(slugConfigs).map((slug) => ({
     url: `${BASE_URL}/categories/${slug}`,
     changeFrequency: "weekly",
     priority: 0.7,
-    lastModified: new Date(),
+    lastModified: now,
   }));
 
   let product_urls: MetadataRoute.Sitemap = [];
@@ -42,7 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         url: `${BASE_URL}/product/${p._id}`,
         changeFrequency: "daily",
         priority: 0.6,
-        lastModified: new Date(),
+        lastModified: now,
       }));
     }
   } catch {

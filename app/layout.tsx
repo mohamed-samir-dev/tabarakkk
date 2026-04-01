@@ -21,7 +21,6 @@ export async function generateMetadata(): Promise<Metadata> {
   const siteName = c.nameAr || "مؤسسة تبارك التقنية الذكية";
   const description = c.details || "مؤسسة تبارك التقنية الذكية - أجهزة إلكترونية بالأقساط داخل المملكة العربية السعودية. أفضل الأسعار على الجوالات، اللابتوبات، الأجهزة اللوحية والإكسسوارات.";
 
-  // يجب أن يكون URL اللوجو مطلقاً دائماً لكي يعمل Open Graph
   const logoUrl = c.logo
     ? (c.logo.startsWith("http") ? c.logo : `${SITE_URL}/api/tabarak${c.logo}`)
     : `${SITE_URL}/og-image.png`;
@@ -48,6 +47,19 @@ export async function generateMetadata(): Promise<Metadata> {
       follow: true,
       googleBot: { index: true, follow: true, "max-image-preview": "large" },
     },
+    icons: {
+      icon: [
+        { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+        { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+        { url: "/favicon.ico" },
+      ],
+      apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+      other: [
+        { rel: "android-chrome-192x192", url: "/android-chrome-192x192.png" },
+        { rel: "android-chrome-512x512", url: "/android-chrome-512x512.png" },
+      ],
+    },
+    manifest: "/site.webmanifest",
     openGraph: {
       type: "website",
       locale: "ar_SA",
