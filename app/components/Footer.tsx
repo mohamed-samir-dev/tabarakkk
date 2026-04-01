@@ -35,13 +35,20 @@ export default async function Footer() {
 
   const img1: string = c.img1 || "";
   const linkType1: string = c.link1Type || c.linkType1 || "link";
-  const link1: string = linkType1 === "file" ? toInlineUrl(c.file1 || "") : ensureAbsolute(c.link1 || "");
+  const useFile1 =
+    linkType1 === "file" || (!!(c.file1 || "").trim() && !(c.link1 || "").trim());
+  const link1: string = useFile1 ? toInlineUrl(c.file1 || "") : ensureAbsolute(c.link1 || "");
   const img2: string = c.img2 || "";
   const linkType2: string = c.link2Type || c.linkType2 || "link";
-  const link2: string = linkType2 === "file" ? toInlineUrl(c.file2 || "") : ensureAbsolute(c.link2 || "");
+  const useFile2 =
+    linkType2 === "file" || (!!(c.file2 || "").trim() && !(c.link2 || "").trim());
+  const link2: string = useFile2 ? toInlineUrl(c.file2 || "") : ensureAbsolute(c.link2 || "");
 
   function getHref(item: { linkType: string; link: string; file: string }) {
-    return item.linkType === "link" ? ensureAbsolute(item.link) : toInlineUrl(item.file);
+    const asFile =
+      item.linkType === "file" ||
+      (!!(item.file || "").trim() && !(item.link || "").trim());
+    return asFile ? toInlineUrl(item.file) : ensureAbsolute(item.link);
   }
 
   return (

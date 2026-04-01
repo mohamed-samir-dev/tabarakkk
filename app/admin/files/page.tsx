@@ -41,7 +41,19 @@ export default function FilesPage() {
         const items = (d.footerItems && d.footerItems.length > 0
           ? d.footerItems
           : [{}, {}, {}]).map(normalize);
-        setData({ qrImage: d.qrImage || "", qrLink: d.qrLink || "", img1: d.img1 || "", link1: d.link1 || "", linkType1: d.linkType1 || (d.file1 ? "file" : "link"), file1: d.file1 || "", img2: d.img2 || "", link2: d.link2 || "", linkType2: d.linkType2 || (d.file2 ? "file" : "link"), file2: d.file2 || "", footerItems: items });
+        setData({
+          qrImage: d.qrImage || "",
+          qrLink: d.qrLink || "",
+          img1: d.img1 || "",
+          link1: d.link1 || "",
+          linkType1: d.link1Type || d.linkType1 || (d.file1 ? "file" : "link"),
+          file1: d.file1 || "",
+          img2: d.img2 || "",
+          link2: d.link2 || "",
+          linkType2: d.link2Type || d.linkType2 || (d.file2 ? "file" : "link"),
+          file2: d.file2 || "",
+          footerItems: items,
+        });
       });
   }, []);
 
@@ -322,7 +334,7 @@ export default function FilesPage() {
           <h2 className="text-sm font-semibold text-gray-600"> مركز الاعمال السعودي</h2>
           <div className="flex items-center gap-2">
             {msgs["s1"] && <span className={`text-xs px-2 py-1 rounded-lg font-medium ${msgs["s1"].includes("✅") ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"}`}>{msgs["s1"]}</span>}
-            <button onClick={() => saveSection("s1", { link1: data.link1, linkType1: data.linkType1, file1: data.file1 })} disabled={savingSection === "s1"}
+            <button onClick={() => saveSection("s1", { link1: data.link1, link1Type: data.linkType1, file1: data.file1 })} disabled={savingSection === "s1"}
               className="px-4 py-1.5 bg-emerald-600 text-white text-xs font-medium rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition-colors">
               {savingSection === "s1" ? "جاري..." : "حفظ"}
             </button>
@@ -411,7 +423,7 @@ export default function FilesPage() {
           <h2 className="text-sm font-semibold text-gray-600"> ضريبه القيمه المضافه</h2>
           <div className="flex items-center gap-2">
             {msgs["s2"] && <span className={`text-xs px-2 py-1 rounded-lg font-medium ${msgs["s2"].includes("✅") ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"}`}>{msgs["s2"]}</span>}
-            <button onClick={() => saveSection("s2", { link2: data.link2, linkType2: data.linkType2, file2: data.file2 })} disabled={savingSection === "s2"}
+            <button onClick={() => saveSection("s2", { link2: data.link2, link2Type: data.linkType2, file2: data.file2 })} disabled={savingSection === "s2"}
               className="px-4 py-1.5 bg-emerald-600 text-white text-xs font-medium rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition-colors">
               {savingSection === "s2" ? "جاري..." : "حفظ"}
             </button>
