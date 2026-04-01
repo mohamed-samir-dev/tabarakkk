@@ -73,7 +73,7 @@ export default function Navbar() {
   }, [mobileOpen]);
 
   return (
-    <nav className="shadow-md sticky top-0 z-50" style={{ background: '#90EE90' }} dir="rtl">
+    <nav className="shadow-md sticky top-0 z-50" style={{ background: '#B7D9EC' }} dir="rtl">
       <div className="max-w-7xl mx-auto px-2 sm:px-4">
         {/* Row 1: Logo + Icons (mobile: same row with hamburger) */}
         <div className="flex items-center justify-between h-12 sm:h-14 lg:h-20">

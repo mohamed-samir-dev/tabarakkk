@@ -34,8 +34,7 @@ body.checkout-page {
 .cart-btn {
   position: relative;
   overflow: hidden;
-  background: #90EE90;
-  color: white;
+  background: linear-gradient(135deg, #1F6F8B, #0F4C6E);  color: white;
   font-weight: 700;
   border-radius: 12px;
   padding: 8px 0;
