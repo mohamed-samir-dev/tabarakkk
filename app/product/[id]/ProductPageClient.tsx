@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { IoArrowForward } from "react-icons/io5";
 import type { Product } from "../../components/products/types";
@@ -11,23 +11,12 @@ import ProductDetails from "./components/ProductDetails";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-export default function ProductPageClient({ id }: { id: string }) {
+export default function ProductPageClient({ id, initialProduct }: { id: string; initialProduct: Product | null }) {
   const router = useRouter();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [product] = useState<Product | null>(initialProduct);
   const [addedToCart, setAddedToCart] = useState(false);
   const addItem = useCartStore((s) => s.addItem);
 
-  useEffect(() => {
-    fetch(`${API}/api/products/${id}`)
-      .then((r) => r.json())
-      .then(setProduct)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [id]);
-
-  if (loading)
-    return <div className="min-h-screen flex items-center justify-center"><p className="text-gray-400 text-lg">جاري التحميل...</p></div>;
   if (!product)
     return <div className="min-h-screen flex items-center justify-center"><p className="text-gray-400 text-lg">المنتج غير موجود</p></div>;
 
