@@ -17,6 +17,21 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+body.print-page,
+body.contract-page {
+  background: #ffffff !important;
+}
+
+body.print-page {
+  background: #ffffff !important;
+}
+
+@media print {
+  body {
+    background: #ffffff !important;
+  }
+}
+
 body.checkout-page {
   background: #0a3550 !important;
 }

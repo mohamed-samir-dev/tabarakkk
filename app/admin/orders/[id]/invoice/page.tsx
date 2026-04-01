@@ -42,6 +42,11 @@ export default function InvoicePrintPage() {
   const [company, setCompany] = useState<Company>({});
 
   useEffect(() => {
+    document.body.classList.add("print-page");
+    return () => document.body.classList.remove("print-page");
+  }, []);
+
+  useEffect(() => {
     if (order) setTimeout(() => window.print(), 500);
   }, [order]);
 
@@ -71,18 +76,18 @@ export default function InvoicePrintPage() {
   const remaining = order.total - order.downPayment;
 
   return (
-    <div style={{ fontFamily: "Arial, sans-serif", padding: 24, maxWidth: 900, margin: "0 auto", direction: "rtl", position: "relative" }}>
+    <div style={{ fontFamily: "Arial, sans-serif", padding: 24, maxWidth: 900, margin: "0 auto", direction: "rtl", position: "relative", backgroundColor: "#fff", minHeight: "100vh" }}>
       {company.stamp && (
         <img
           src={company.stamp}
           alt="stamp"
           style={{
             position: "fixed",
-            top: "50%",
+            top: "35%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 240,
-            opacity: 0.5,
+            width: 280,
+            opacity: 0.75,
             pointerEvents: "none",
             zIndex: 9999,
           }}

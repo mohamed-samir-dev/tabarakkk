@@ -40,6 +40,11 @@ export default function ContractPage() {
   }, [id]);
 
   useEffect(() => {
+    document.body.classList.add("print-page", "contract-page");
+    return () => document.body.classList.remove("print-page", "contract-page");
+  }, []);
+
+  useEffect(() => {
     if (data) setTimeout(() => window.print(), 500);
   }, [data]);
 
@@ -58,21 +63,21 @@ export default function ContractPage() {
 
   const style = `
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Arial, sans-serif; direction: rtl; }
+    html, body { background: #fff !important; font-family: Arial, sans-serif; direction: rtl; }
     .sig-row { display: flex; justify-content: space-between; margin-top: 40px; font-size: 13px; }
     @media (max-width: 500px) {
       .sig-row { flex-direction: column; align-items: center; gap: 24px; }
     }
     @media print {
       @page { size: A4; margin: 10mm; }
-      body { margin: 0; padding: 0; }
+      html, body { margin: 0; padding: 0; background: #fff !important; }
       img[alt="header"], img[alt="footer"] { width: 100% !important; max-height: none !important; }
     }
   `;
 
 
   return (
-    <div style={{ fontFamily: "Arial, sans-serif", padding: 24, maxWidth: 900, margin: "0 auto", direction: "rtl" }}>
+    <div style={{ fontFamily: "Arial, sans-serif", padding: 24, maxWidth: 900, margin: "0 auto", direction: "rtl", backgroundColor: "#fff", minHeight: "100vh", color: "#000" }}>
       <style>{style}</style>
 
       {company.header && <img src={company.header} alt="header" style={{ width: "100%", marginBottom: 24 }} />}
@@ -119,7 +124,7 @@ export default function ContractPage() {
         </div>
         <div style={{ textAlign: "center", width: 180 }}>
           <div style={{ borderTop: "1px solid #1a1a1a", paddingTop: 8, color: "#555" }}>الختم</div>
-          {company.stamp && <img src={company.stamp} alt="ختم" style={{ maxWidth: 100, maxHeight: 80, objectFit: "contain", marginTop: 8 }} />}
+          {company.stamp && <img src={company.stamp} alt="ختم" style={{ maxWidth: 130, maxHeight: 110, objectFit: "contain", marginTop: 8, opacity: 0.85 }} />}
         </div>
       </div>
 

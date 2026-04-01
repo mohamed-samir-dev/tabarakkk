@@ -45,7 +45,7 @@ export default function ProductCard({ product, priority = false }: { product: Pr
           تمت إضافة المنتج للسلة
         </div>
       )}
-    <Link href={`/product/${product._id}`} className="relative bg-white rounded-xl sm:rounded-2xl shadow-md overflow-hidden border border-[#B8D8EC] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col h-full" dir="rtl">
+    <Link href={`/product/${product._id}`} className="relative bg-white rounded-xl sm:rounded-2xl shadow-md overflow-hidden  hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col h-full" dir="rtl">
       {/* Discount Badge */}
       {discountPercent > 0 && (
         <span className="absolute z-10 top-2 right-2 bg-red-600 text-white text-[9px] sm:text-xs md:text-sm font-bold px-1.5 sm:px-2.5 md:px-3 py-0.5 rounded-full">
@@ -55,7 +55,7 @@ export default function ProductCard({ product, priority = false }: { product: Pr
 
       {/* Image */}
       <div className="relative w-full" style={{ paddingBottom: "100%" }}>
-        <div className="absolute inset-0 bg-[#E6F2F8]">
+        <div className="absolute inset-0 bg-white">
           {resolvedImage ? (
             <Image src={resolvedImage} alt={name} fill className="object-contain p-2 sm:p-4" sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" priority={priority} loading={priority ? "eager" : "lazy"} />
           ) : (

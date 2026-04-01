@@ -70,11 +70,11 @@ export default function PrintOrderPage() {
           alt="stamp"
           style={{
             position: "absolute",
-            top: "60%",
+            top: "40%",
             left: "40%",
             transform: "translate(-50%, -50%)",
             width: 240,
-            opacity: 0.5,
+            opacity: 0.6,
             pointerEvents: "none",
             zIndex: 9999,
           }}
