@@ -47,8 +47,8 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
   const parentHref = config?.parentHref ?? "/";
 
   return (
-    <main className="min-h-screen bg-[#E6F2F8]" dir="rtl">
-      <div className="bg-[#E6F2F8] border-b border-[#B8D8EC] shadow-sm">
+    <main className="min-h-screen bg-white" dir="rtl">
+      <div className="bg-white border-b border-white shadow-none">
         <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-[#1F6F8B] mb-2 sm:mb-3">
             <Link href="/" className="hover:text-[#0F4C6E] transition">الرئيسية</Link>
