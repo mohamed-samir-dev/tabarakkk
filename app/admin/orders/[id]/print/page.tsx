@@ -70,7 +70,7 @@ export default function PrintOrderPage() {
           alt="stamp"
           style={{
             position: "absolute",
-            bottom: 280,
+            bottom: 200,
             left: 24,
             width: 180,
             opacity: 0.6,
