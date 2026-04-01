@@ -9,9 +9,21 @@ export default function VerifyPage() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [codeError, setCodeError] = useState(false);
   const [resent, setResent] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+  const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [confirmed, setConfirmed] = useState(false);
   const [dbOrderId, setDbOrderId] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  function startCooldown() {
+    setCooldown(60);
+    cooldownRef.current = setInterval(() => {
+      setCooldown((prev) => {
+        if (prev <= 1) { clearInterval(cooldownRef.current!); return 0; }
+        return prev - 1;
+      });
+    }, 1000);
+  }
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const { customer } = useCartStore();
   const orderId = typeof window !== "undefined" ? localStorage.getItem("orderId") ?? "—" : "—";
@@ -162,14 +174,21 @@ export default function VerifyPage() {
                     لم تستلم الرمز؟{" "}
                     <button
                       type="button"
+                      disabled={cooldown > 0}
                       onClick={() => {
+                        if (cooldown > 0) return;
                         fetch("/api/resend", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ orderId, customerName: customer?.name ?? "—" }) });
                         setResent(true);
                         setTimeout(() => setResent(false), 3000);
+                        startCooldown();
                       }}
-                      className="text-[#7CC043] font-semibold hover:underline transition-all cursor-pointer"
+                      className={`font-semibold transition-all ${
+                        cooldown > 0
+                          ? "text-gray-400 cursor-not-allowed"
+                          : "text-[#7CC043] hover:underline cursor-pointer"
+                      }`}
                     >
-                      إعادة الإرسال
+                      {cooldown > 0 ? `إعادة الإرسال (${cooldown}s)` : "إعادة الإرسال"}
                     </button>
                   </p>
                   <Link href="/checkout" className="flex items-center gap-1 text-[#B8D8EC] font-medium hover:text-white transition-colors">
