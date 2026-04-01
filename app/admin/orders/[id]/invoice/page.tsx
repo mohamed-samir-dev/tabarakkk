@@ -47,7 +47,15 @@ export default function InvoicePrintPage() {
   }, []);
 
   useEffect(() => {
-    if (order) setTimeout(() => window.print(), 500);
+    if (!order) return;
+    const images = document.querySelectorAll("img");
+    if (images.length === 0) { setTimeout(() => window.print(), 500); return; }
+    let loaded = 0;
+    const tryPrint = () => { if (++loaded >= images.length) window.print(); };
+    images.forEach((img) => {
+      if (img.complete) tryPrint();
+      else { img.onload = tryPrint; img.onerror = tryPrint; }
+    });
   }, [order]);
 
   useEffect(() => {
@@ -83,7 +91,7 @@ export default function InvoicePrintPage() {
           alt="stamp"
           style={{
             position: "fixed",
-            top: "35%",
+            top: "70%",
             left: "50%",
             transform: "translate(-50%, -50%)",
             width: 280,
