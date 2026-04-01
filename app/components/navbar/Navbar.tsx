@@ -95,7 +95,7 @@ export default function Navbar() {
                   width={0}
                   height={0}
                   sizes="100vw"
-                  className="h-14 sm:h-16 lg:h-20 w-auto"
+                  className="h-10 sm:h-14 lg:h-20 w-auto"
                   priority
                   loading="eager"
                 />
