@@ -93,7 +93,7 @@ export const slugConfigs: Record<string, SlugConfig> = {
     label: "ابل ايفون 17 برو ماكس",
     parentLabel: "الهواتف الذكية",
     parentHref: "/smartphones",
-    filters: { category: "ابل ايفون 17برو ماكس" },
+    filters: { category: "ابل ايفون 17 برو ماكس" },
   },
   "iphone-17-pro": {
     label: "ابل ايفون 17 برو",
@@ -123,7 +123,7 @@ export const slugConfigs: Record<string, SlugConfig> = {
     label: "سامسونج جالكسي اس 22 الترا",
     parentLabel: "الهواتف الذكية",
     parentHref: "/smartphones",
-    filters: { brand: "Samsung", nameIncludes: ["s22 ultra", "s22 الترا", "s22 ألترا"] },
+    filters: { category: "سامسونج جالاكسي S22" },
   },
   "samsung-s23-ultra": {
     label: "سامسونج جالكسي اس 23 الترا",
@@ -135,19 +135,19 @@ export const slugConfigs: Record<string, SlugConfig> = {
     label: "سامسونج جالكسي اس 24 الترا",
     parentLabel: "الهواتف الذكية",
     parentHref: "/smartphones",
-    filters: { brand: "Samsung", nameIncludes: ["s24 ultra", "s24 الترا", "s24 ألترا"] },
+    filters: { category: "سامسونج جالاكسي S24" },
   },
-  "samsung-s25-ultra": {
-    label: "سامسونج جالكسي اس 25 الترا",
+  "samsung-s25": {
+    label: "سامسونج جالاكسي S25",
     parentLabel: "الهواتف الذكية",
     parentHref: "/smartphones",
-    filters: { brand: "Samsung", nameIncludes: ["s25 ultra", "s25 الترا", "s25 ألترا"] },
+    filters: { category: "سامسونج جالاكسي S25" },
   },
   "samsung-s26-ultra": {
-    label: "سامسونج جالكسي اس 26 الترا",
+    label: "سامسونج جالاكسي S26",
     parentLabel: "الهواتف الذكية",
     parentHref: "/smartphones",
-    filters: { brand: "Samsung", nameIncludes: ["s26 ultra", "s26 الترا", "s26 ألترا"] },
+    filters: { category: "سامسونج جالاكسي S26" },
   },
 
   // ─── Apple Watches ─────────────────────────────────────────

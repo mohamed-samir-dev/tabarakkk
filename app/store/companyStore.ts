@@ -27,7 +27,10 @@ export const useCompanyStore = create<CompanyStore>((set) => ({
   fetchCompany: async () => {
     try {
       const res = await fetch(`/api/admin/company`, { credentials: "include" });
-      const data = await res.json();
+      if (!res.ok) return;
+      const text = await res.text();
+      if (!text) return;
+      const data = JSON.parse(text);
       const fullLogo = data.logo
         ? (data.logo.startsWith("http") ? data.logo : `${API}${data.logo}`)
         : "";
