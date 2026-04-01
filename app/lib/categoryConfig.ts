@@ -75,19 +75,19 @@ export const slugConfigs: Record<string, SlugConfig> = {
     label: "ابل ايفون 16 برو",
     parentLabel: "الهواتف الذكية",
     parentHref: "/smartphones",
-    filters: { category: "ابل ايفون 16 برو" },
+    filters: { category: "ايفون 16 برو" },
   },
   "iphone-16-plus": {
     label: "ابل ايفون 16 بلس",
     parentLabel: "الهواتف الذكية",
     parentHref: "/smartphones",
-    filters: { category: "ابل ايفون 16 بلس" },
+    filters: { category: "ايفون 16 بلس" },
   },
   "iphone-16": {
     label: "ابل ايفون 16 عادي",
     parentLabel: "الهواتف الذكية",
     parentHref: "/smartphones",
-    filters: { category: "ابل ايفون 16" },
+    filters: { category: "ايفون 16" },
   },
   "iphone-17-pro-max": {
     label: "ابل ايفون 17 برو ماكس",
@@ -161,7 +161,7 @@ export const slugConfigs: Record<string, SlugConfig> = {
     label: "ساعات ابل",
     parentLabel: "ساعات ابل",
     parentHref: "/apple-watches",
-    filters: { brand: "Apple", nameIncludes: ["ساعة", "watch"] },
+    filters: { category: "ساعات ابل" },
   },
 
   // ─── Smart Watches ─────────────────────────────────────────

@@ -38,9 +38,7 @@ export default function FilesPage() {
       .then((r) => r.json())
       .then((d) => {
         const normalize = (item: Partial<FooterItem>): FooterItem => ({ image: item.image || "", linkType: item.linkType || (item.file ? "file" : "link"), link: item.link || "", file: item.file || "" });
-        const items = (d.footerItems && d.footerItems.length > 0
-          ? d.footerItems
-          : [{}, {}, {}]).map(normalize);
+        const items = (d.footerItems || []).map(normalize);
         setData({
           qrImage: d.qrImage || "",
           qrLink: d.qrLink || "",

@@ -94,7 +94,6 @@ async function getCategories(): Promise<Category[]> {
     const visibleSet = new Map(
       settings.filter((s) => s.showInHome).map((s) => [s.category, s.order])
     );
-    if (!visibleSet.size) return allCats;
 
     return allCats
       .filter((c) => visibleSet.has(c.name))
