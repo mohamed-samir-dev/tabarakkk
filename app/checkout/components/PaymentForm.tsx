@@ -86,7 +86,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
   };
 
   const inputClass = (field: keyof typeof fields) =>
-    `w-full border rounded-lg px-3 py-2.5 text-base sm:text-sm outline-none bg-[#1F6F8B]/40 text-white placeholder-[#B8D8EC]/60 focus:border-[#7CC043] ${errors && !fields[field] ? "border-red-400" : "border-[#1F6F8B]"}`;
+    `w-full border rounded-lg px-3 py-2.5 text-base sm:text-sm outline-none bg-white text-gray-800 placeholder-gray-400 focus:border-[#7CC043] ${errors && !fields[field] ? "border-red-400" : "border-gray-300"}`;
 
   const cardType = getCardType(fields.name.replace(/\s/g, ""));
   const displayNumber = fields.name || "0000 0000 0000 0000";
@@ -166,14 +166,14 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
         </div>
       </div>
 
-      <div className="bg-[#0a3550]/80 backdrop-blur-sm border border-[#1F6F8B] rounded-2xl overflow-hidden p-4 sm:p-6">
+      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden p-4 sm:p-6">
         <div className="flex justify-start items-center gap-3 mb-4">
           <Image src="/mada975b.png" alt="Mada" width={60} height={60} className="object-contain sm:w-[80px] sm:h-[80px]" />
           <Image src="/cc975b.png" alt="Visa" width={60} height={60} className="object-contain sm:w-[80px] sm:h-[80px]" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="sm:col-span-2">
-            <label className="block text-xs sm:text-sm font-medium text-[#B8D8EC] mb-1">رقم البطاقه <span className="text-red-400">*</span></label>
+            <label className="block text-xs sm:text-sm font-medium text-gray-600 mb-1">رقم البطاقه <span className="text-red-400">*</span></label>
             <div className="relative">
               <input
                 autoComplete="cc-number" type="text" placeholder="0000 0000 0000 0000" maxLength={19} dir="ltr" style={{textAlign: "right"}}
@@ -187,7 +187,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
                 className={`${inputClass("name")} pr-16`}
               />
               {fields.name.replace(/\s/g, "").length >= 1 && (
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#B8D8EC]">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-500">
                   {getCardType(fields.name.replace(/\s/g, "")) ?? "غير معروف"}
                 </span>
               )}
@@ -199,7 +199,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
             )}
           </div>
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-[#B8D8EC] mb-1">تاريخ الانتهاء <span className="text-red-400">*</span></label>
+            <label className="block text-xs sm:text-sm font-medium text-gray-600 mb-1">تاريخ الانتهاء <span className="text-red-400">*</span></label>
             <input
               autoComplete="cc-exp" type="text" placeholder="MM/YY" maxLength={5}
               value={fields.age}
@@ -211,7 +211,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
             )}
           </div>
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-[#B8D8EC] mb-1">رمز ال CVV <span className="text-red-400">*</span></label>
+            <label className="block text-xs sm:text-sm font-medium text-gray-600 mb-1">رمز ال CVV <span className="text-red-400">*</span></label>
             <input
               autoComplete="cc-csc" type="text" placeholder="000" maxLength={3}
               value={fields.cvv}
@@ -223,7 +223,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
             {cvvError && <p className="text-red-500 text-sm font-medium mt-1.5">{cvvError}</p>}
           </div>
           <div className="sm:col-span-2">
-            <label className="block text-xs sm:text-sm font-medium text-[#B8D8EC] mb-1">اسم حامل البطاقة <span className="text-red-400">*</span></label>
+            <label className="block text-xs sm:text-sm font-medium text-gray-600 mb-1">اسم حامل البطاقة <span className="text-red-400">*</span></label>
             <input
               autoComplete="cc-name" type="text" placeholder="اسم حامل البطاقة"
               value={fields.cardHolder}
@@ -237,7 +237,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
       <div className="flex gap-3">
         <button
           onClick={() => router.push("/cart")}
-          className="flex-1 border border-[#1F6F8B] text-[#B8D8EC] font-medium py-3.5 rounded-2xl text-sm hover:bg-[#1F6F8B]/30 transition"
+          className="flex-1 border border-gray-300 text-gray-600 font-medium py-3.5 rounded-2xl text-sm hover:bg-gray-100 transition"
         >
           السابق
         </button>

@@ -26,7 +26,7 @@ export default function CartPage() {
 
   if (items.length === 0)
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center gap-5 px-4" style={{ background: 'linear-gradient(to bottom, #B8D8EC, #0a3550)' }} dir="rtl">
+      <main className="min-h-screen flex flex-col items-center justify-center gap-5 px-4 bg-white" dir="rtl">
         <div className="w-20 h-20 bg-[#1F6F8B]/40 rounded-full flex items-center justify-center">
           <IoCartOutline size={36} className="text-[#B8D8EC]" />
         </div>
@@ -41,9 +41,9 @@ export default function CartPage() {
     );
 
   return (
-    <main className="min-h-screen pb-24" style={{ background: 'linear-gradient(to bottom, #B8D8EC, #0a3550)' }} dir="rtl">
-      <style>{`body { background-color: #0a3550; }`}</style>
-      <div className="sticky top-0 z-10 border-b border-[#1F6F8B]" style={{ background: '#B8D8EC' }}>
+    <main className="min-h-screen pb-24 bg-white" dir="rtl">
+      <style>{`body { background-color: #ffffff; }`}</style>
+      <div className="sticky top-0 z-10 border-b border-gray-200 bg-white">
         <div className="max-w-4xl mx-auto px-2 sm:px-4 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/" className="w-8 h-8 bg-[#0F4C6E]/20 rounded-full flex items-center justify-center hover:bg-[#0F4C6E]/40 transition">
@@ -68,7 +68,7 @@ export default function CartPage() {
           />
         ))}
 
-        <div className="bg-[#0a3550]/80 backdrop-blur-sm border border-[#1F6F8B] rounded-2xl p-3 sm:p-4 space-y-2.5">
+        <div className="bg-gray-800 rounded-2xl p-3 sm:p-4 space-y-2.5">
           <div className="flex justify-between items-center text-sm">
             <span className="text-[#B8D8EC]">المجموع</span>
             <span className="text-white font-bold">{fmt(total)} ر.س</span>
@@ -83,7 +83,7 @@ export default function CartPage() {
           </div>
         </div>
 
-        <p className="text-sm font-extrabold text-white pt-2 pr-1">بيانات العميل</p>
+        <p className="text-sm font-extrabold text-gray-800 pt-2 pr-1">بيانات العميل</p>
 
         <CustomerForm
           total={total}

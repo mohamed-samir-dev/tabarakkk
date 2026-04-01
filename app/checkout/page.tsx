@@ -49,9 +49,9 @@ export default function CheckoutPage() {
   };
 
   return (
-    <main className="min-h-screen pb-24" style={{ background: 'linear-gradient(to bottom, #B8D8EC, #0a3550)' }} dir="rtl">
-      <style>{`body { background-color: #0a3550; }`}</style>
-      <div className="sticky top-0 z-10 border-b border-[#1F6F8B]" style={{ background: '#B8D8EC' }}>
+    <main className="min-h-screen pb-24 bg-white" dir="rtl">
+      <style>{`body { background-color: #ffffff; }`}</style>
+      <div className="sticky top-0 z-10 border-b border-gray-200 bg-white">
         <div className="max-w-4xl mx-auto px-3 sm:px-6 py-3.5 flex items-center gap-3">
           <Link href="/cart" className="w-8 h-8 bg-[#0F4C6E]/20 rounded-full flex items-center justify-center hover:bg-[#0F4C6E]/40 transition">
             <IoChevronBack size={18} className="text-[#0F4C6E] rotate-180" />

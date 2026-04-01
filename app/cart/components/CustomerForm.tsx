@@ -9,7 +9,7 @@ function InlineField({ label, children, error }: { label: string; children: Reac
   return (
     <div className="flex flex-col gap-1">
       <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-        <label className="text-xs sm:text-sm text-[#B8D8EC] font-bold sm:whitespace-nowrap sm:w-36 sm:shrink-0">
+        <label className="text-xs sm:text-sm text-gray-600 font-bold sm:whitespace-nowrap sm:w-36 sm:shrink-0">
           {label} <span className="text-red-400">*</span>
         </label>
         <div className="flex-1">{children}</div>
@@ -60,10 +60,10 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
   }, [months, monthlyPayment]);
 
   const inputClass = (field: string) =>
-    `w-full border rounded-xl px-3 py-2.5 text-sm text-white bg-[#0a3550]/60 focus:outline-none transition placeholder:text-[#B8D8EC]/50 ${
+    `w-full border rounded-xl px-3 py-2.5 text-sm text-gray-800 bg-white focus:outline-none transition placeholder:text-gray-400 ${
       errors[field]
         ? "border-red-400 focus:border-red-400 focus:ring-1 focus:ring-red-400/20"
-        : "border-[#1F6F8B] focus:border-[#B8D8EC] focus:ring-1 focus:ring-[#B8D8EC]/20"
+        : "border-gray-300 focus:border-gray-500 focus:ring-1 focus:ring-gray-300"
     }`;
 
   const handleSubmit = () => {
@@ -81,7 +81,7 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
 
   return (
     <>
-      <div className="bg-[#0a3550]/80 backdrop-blur-sm border border-[#1F6F8B] rounded-2xl p-3 sm:p-4 space-y-3">
+      <div className="bg-white border border-gray-200 rounded-2xl p-3 sm:p-4 space-y-3">
         <InlineField label="الاسم كاملاً" error={errors.name}>
           <input value={name} onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: "" })); }} placeholder="محمد أحمد" className={inputClass("name")} />
         </InlineField>
@@ -99,7 +99,7 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
           <input value={address} onChange={(e) => { setAddress(e.target.value); setErrors((p) => ({ ...p, address: "" })); }} placeholder="المدينة - الحي - الشارع" className={inputClass("address")} />
         </InlineField>
 
-        <div className="border-t border-[#1F6F8B] pt-3" />
+        <div className="border-t border-gray-200 pt-3" />
 
         <InlineField label=" الدفع/التقسيط علي ">
           <select
@@ -112,11 +112,11 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
                 setMonths(Number(e.target.value));
               }
             }}
-            className="w-full border border-[#1F6F8B] rounded-xl px-3 py-2.5 text-sm font-bold text-white bg-[#0a3550] focus:outline-none focus:border-[#B8D8EC] focus:ring-1 focus:ring-[#B8D8EC]/20 transition cursor-pointer"
+            className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm font-bold text-gray-800 bg-white focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-300 transition cursor-pointer"
           >
-            <option value="full" className="bg-[#0a3550]">سداد المبلغ كاملاً</option>
+            <option value="full" className="bg-white">سداد المبلغ كاملاً</option>
             {MONTHS_OPTIONS.map((m) => (
-              <option key={m} value={m} className="bg-[#0a3550]">تقسيط {m} شهر</option>
+              <option key={m} value={m} className="bg-white">تقسيط {m} شهر</option>
             ))}
           </select>
         </InlineField>
@@ -127,36 +127,36 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
               <select
                 value={String(downPaymentExtra)}
                 onChange={(e) => setDownPaymentExtra(Number(e.target.value))}
-                className="w-full border border-[#1F6F8B] rounded-xl px-3 py-2.5 text-sm font-bold text-white bg-[#0a3550] focus:outline-none focus:border-[#B8D8EC] focus:ring-1 focus:ring-[#B8D8EC]/20 transition cursor-pointer"
+                className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm font-bold text-gray-800 bg-white focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-300 transition cursor-pointer"
               >
                 {DOWN_PAYMENT_OPTIONS.map((v) => (
-                  <option key={v} value={v - minDownPayment} className="bg-[#0a3550]">{fmt(v)} ر.س</option>
+                  <option key={v} value={v - minDownPayment} className="bg-white">{fmt(v)} ر.س</option>
                 ))}
-                <option value={total - minDownPayment} className="bg-[#0a3550]">الدفع بالكامل ({fmt(total)} ر.س)</option>
+                <option value={total - minDownPayment} className="bg-white">الدفع بالكامل ({fmt(total)} ر.س)</option>
               </select>
             </InlineField>
             <InlineField label="القسط الشهري">
-              <div className="w-full bg-[#1F6F8B]/30 border border-[#1F6F8B] rounded-xl px-3 py-2.5 text-sm font-extrabold text-[#7CC043]">
+              <div className="w-full bg-gray-100 border border-gray-300 rounded-xl px-3 py-2.5 text-sm font-extrabold text-[#7CC043]">
                 {fmt(monthlyPayment)} ر.س
               </div>
             </InlineField>
 
             {months > 0 && (
-              <div className="rounded-xl overflow-hidden border border-[#1F6F8B] mt-1">
+              <div className="rounded-xl overflow-hidden border border-gray-200 mt-1">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-[#1F6F8B]/40">
-                      <th className="py-2 px-3 text-right text-xs sm:text-sm font-bold text-[#B8D8EC]">#</th>
-                      <th className="py-2 px-3 text-right text-xs sm:text-sm font-bold text-[#B8D8EC]">التاريخ</th>
-                      <th className="py-2 px-3 text-right text-xs sm:text-sm font-bold text-[#B8D8EC]">المبلغ</th>
+                    <tr className="bg-gray-100">
+                      <th className="py-2 px-3 text-right text-xs sm:text-sm font-bold text-gray-600">#</th>
+                      <th className="py-2 px-3 text-right text-xs sm:text-sm font-bold text-gray-600">التاريخ</th>
+                      <th className="py-2 px-3 text-right text-xs sm:text-sm font-bold text-gray-600">المبلغ</th>
                     </tr>
                   </thead>
                   <tbody>
                     {schedule.map((row, i) => (
-                      <tr key={row.index} className={i % 2 === 0 ? "bg-[#0a3550]/60" : "bg-[#1F6F8B]/20"}>
-                        <td className="py-2 px-3 text-[#B8D8EC]/70 font-bold text-xs sm:text-sm">{row.index}</td>
-                        <td className="py-2 px-3 text-[#B8D8EC] text-xs sm:text-sm">{row.date}</td>
-                        <td className="py-2 px-3 font-bold text-white text-xs sm:text-sm">{fmt(row.amount)} ر.س</td>
+                      <tr key={row.index} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                        <td className="py-2 px-3 text-gray-400 font-bold text-xs sm:text-sm">{row.index}</td>
+                        <td className="py-2 px-3 text-gray-600 text-xs sm:text-sm">{row.date}</td>
+                        <td className="py-2 px-3 font-bold text-gray-800 text-xs sm:text-sm">{fmt(row.amount)} ر.س</td>
                       </tr>
                     ))}
                   </tbody>
