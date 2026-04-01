@@ -241,7 +241,7 @@ export const slugConfigs: Record<string, SlugConfig> = {
     label: "ماك بوك اير",
     parentLabel: "لابتوبات وشاشات",
     parentHref: "/laptops",
-    filters: { brand: "Apple", nameIncludes: ["macbook air", "ماك بوك اير"] },
+    filters: { brand: "Apple", nameIncludes: ["macbook air", "ماك بوك اير", "ماك بوك إير", "macbook"] },
   },
   "samsung-monitors": {
     label: "شاشات سامسونج",
