@@ -6,7 +6,7 @@ const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 async function getCompany() {
   try {
-    const r = await fetch(`${API}/api/admin/company`, { next: { revalidate: 60 } });
+    const r = await fetch(`${API}/api/admin/company`, { cache: "no-store" });
     return r.ok ? r.json() : {};
   } catch {
     return {};
