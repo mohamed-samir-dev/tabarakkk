@@ -102,8 +102,8 @@ export default function VerifyPage() {
 
   // ── Main Page ─────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen flex flex-col font-sans" style={{ background: 'linear-gradient(to bottom, #B8D8EC, #0a3550)' }}>
-      <style>{`body { background-color: #0a3550; }`}</style>
+    <div className="min-h-screen flex flex-col font-sans bg-white">
+      <style>{`body { background-color: #ffffff; }`}</style>
 
       {/* Main */}
       <main className="flex-grow flex items-center justify-center px-6 py-12 md:py-24">

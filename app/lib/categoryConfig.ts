@@ -143,6 +143,12 @@ export const slugConfigs: Record<string, SlugConfig> = {
     parentHref: "/smartphones",
     filters: { category: "سامسونج جالاكسي S25" },
   },
+  "samsung-s25-ultra": {
+    label: "سامسونج جالاكسي S25 الترا",
+    parentLabel: "الهواتف الذكية",
+    parentHref: "/smartphones",
+    filters: { category: "سامسونج جالاكسي S25" },
+  },
   "samsung-s26-ultra": {
     label: "سامسونج جالاكسي S26",
     parentLabel: "الهواتف الذكية",
