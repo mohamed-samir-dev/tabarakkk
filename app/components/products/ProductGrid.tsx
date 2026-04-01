@@ -50,6 +50,10 @@ const categoryPageMap: Record<string, string> = {
   "ابل ايفون 14 بلس": "/smartphones/iphone-14-plus",
   "ابل ايفون 13 برو ماكس": "/smartphones/iphone-13-pro-max",
   "سامسونج جالكسي": "/smartphones/samsung-s25-ultra",
+  "سامسونج جالاكسي": "/smartphones/samsung-s25-ultra",
+  "سامسونج جالاكسي S26": "/smartphones/samsung-s25-ultra",
+  "سامسونج جالاكسي S25": "/smartphones/samsung-s25-ultra",
+  "سامسونج جالاكسي S25 الترا": "/smartphones/samsung-s25-ultra",
   "ساعات ابل": "/apple-watches/se",
   "سماعات ابل": "/audio/airpods-pro",
   "بلاي ستيشن": "/playstation/ps5",
@@ -61,7 +65,7 @@ const categoryPageMap: Record<string, string> = {
 
 function CategoryRow({ category, items, isFirst }: { category: string; items: Product[]; isFirst?: boolean }) {
   const visible = items.slice(0, LIMIT);
-  const href = categoryPageMap[category] ?? categoryPageMap[category.toLowerCase()] ?? "#";
+  const href = categoryPageMap[category] ?? categoryPageMap[category.toLowerCase()] ?? `/search?q=${encodeURIComponent(category)}`;
 
   return (
     <div className="mb-10">
