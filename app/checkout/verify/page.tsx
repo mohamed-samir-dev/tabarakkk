@@ -3,20 +3,27 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useCartStore } from "../../store/cartStore";
-import { FileText, Receipt, X, ShieldCheck } from "lucide-react";
+import { FileText, Receipt, X, ShieldCheck, KeyRound } from "lucide-react";
 
 export default function VerifyPage() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [codeError, setCodeError] = useState(false);
   const [resent, setResent] = useState(false);
-  const [cooldown, setCooldown] = useState(60);
+  const [cooldown, setCooldown] = useState<number>(() => {
+    if (typeof window === "undefined") return 60;
+    const unlockAt = Number(localStorage.getItem("resendUnlockAt") ?? 0);
+    const remaining = Math.ceil((unlockAt - Date.now()) / 1000);
+    return remaining > 0 ? remaining : 0;
+  });
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [confirmed, setConfirmed] = useState(false);
   const [dbOrderId, setDbOrderId] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   function startCooldown() {
+    localStorage.setItem("resendUnlockAt", String(Date.now() + 60000));
     setCooldown(60);
+    clearInterval(cooldownRef.current!);
     cooldownRef.current = setInterval(() => {
       setCooldown((prev) => {
         if (prev <= 1) { clearInterval(cooldownRef.current!); return 0; }
@@ -29,7 +36,14 @@ export default function VerifyPage() {
   const orderId = typeof window !== "undefined" ? localStorage.getItem("orderId") ?? "—" : "—";
 
   useEffect(() => {
-    startCooldown();
+    if (cooldown <= 0) return;
+    cooldownRef.current = setInterval(() => {
+      setCooldown((prev) => {
+        if (prev <= 1) { clearInterval(cooldownRef.current!); return 0; }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(cooldownRef.current!);
   }, []);
 
   // polling
@@ -122,26 +136,32 @@ export default function VerifyPage() {
       <style>{`body { background-color: #ffffff; }`}</style>
 
       {/* Main */}
-      <main className="flex-grow flex items-center justify-center px-6 py-12 md:py-24">
-        <div className="max-w-md w-full">
+      <main className="flex-grow flex items-center justify-center px-4 py-10 md:py-20">
+        <div className="max-w-2xl w-full">
 
           {/* Card */}
-          <div className="bg-[#0a3550]/80 backdrop-blur-sm border border-[#1F6F8B] rounded-2xl shadow-[0px_20px_40px_rgba(0,0,0,0.3)] p-8 md:p-12 relative overflow-hidden">
+          <div className="bg-white rounded-3xl shadow-[0px_8px_32px_rgba(0,0,0,0.10)] border border-gray-100 p-7 md:p-10 relative overflow-hidden">
 
             {/* Branding */}
-            <div className="mb-10 text-center">
-              <span className="inline-block bg-[#7CC043] text-white px-3 py-1 rounded-full text-[0.75rem] uppercase tracking-[0.05em] mb-4 font-semibold">
-                الأمان أولاً
-              </span>
-              <h1 className="text-[2rem] text-white leading-tight tracking-tight font-bold mb-2">التحقق الأمني</h1>
-              <p className="text-[#B8D8EC] leading-relaxed text-sm">
-                للحفاظ على أمان حسابك، أرسلنا رمزاً مكوناً من 4 أو 6 أرقام
+            <div className="mb-6 text-center">
+              <div className="flex flex-col items-center gap-3 mb-4">
+                <div className="bg-red-600 rounded-2xl p-5 shadow-md shadow-red-200">
+                  <KeyRound className="w-12 h-12 text-white" />
+                </div>
+                <span className="text-gray-700 font-bold text-xl tracking-wide">الأمان أولاً</span>
+              </div>
+              <h1 className="text-2xl text-gray-900 leading-tight tracking-tight font-bold mb-3">تأكيد العملية</h1>
+              <p className="text-gray-500 leading-relaxed text-sm">
+                الرجاء إدخال رمز التحقق الذي يصلكم على الهاتف المحمول
+              </p>
+              <p className="text-gray-400 text-xs mt-2 bg-gray-50 rounded-xl px-4 py-2 inline-block">
+                ⏱ أحياناً يصل الرمز متأخراً بعد بضع دقائق، يرجى الانتظار قليلاً
               </p>
             </div>
 
             {/* OTP Grid */}
-            <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="grid grid-cols-6 gap-2 md:gap-4" dir="ltr">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="grid grid-cols-6 gap-3 md:gap-4" dir="ltr">
                 {otp.map((digit, i) => (
                   <input
                     key={i}
@@ -153,8 +173,8 @@ export default function VerifyPage() {
                     onChange={e => handleOtpChange(i, e.target.value)}
                     onKeyDown={e => handleOtpKeyDown(i, e)}
                     aria-label={`Digit ${i + 1}`}
-                    className={`w-full aspect-square text-center text-2xl font-bold rounded-lg transition-all outline-none border-2 text-white ${
-                      codeError ? "border-red-400 bg-red-900/40" : "bg-[#1F6F8B]/60 border-[#1F6F8B] focus:border-[#7CC043] focus:bg-[#0F4C6E] focus:shadow-[0_0_0_2px_rgba(124,192,67,0.2)]"
+                    className={`w-full aspect-square text-center text-2xl font-bold rounded-xl transition-all outline-none border-2 text-gray-900 ${
+                      codeError ? "border-red-400 bg-red-50" : "bg-gray-50 border-gray-200 focus:border-red-500 focus:bg-white focus:shadow-[0_0_0_3px_rgba(220,38,38,0.12)]"
                     }`}
                   />
                 ))}
@@ -167,14 +187,13 @@ export default function VerifyPage() {
               <div className="space-y-4">
                 <button
                   type="submit"
-                  className="w-full py-4 px-6 rounded-xl text-white font-bold text-lg bg-gradient-to-br from-[#366b00] to-[#7cc043] hover:shadow-lg transition-all duration-300 active:scale-95 flex items-center justify-center gap-2"
+                  className="w-full py-4 px-6 rounded-xl text-white font-bold text-lg bg-red-600 hover:bg-red-700 shadow-md shadow-red-200 hover:shadow-red-300 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2"
                 >
-                  التحقق من الهوية
-                  <ShieldCheck className="w-5 h-5" />
+اتمام الطلب                  <ShieldCheck className="w-5 h-5" />
                 </button>
 
                 <div className="flex flex-col items-center gap-3 text-sm">
-                  <p className="text-[#B8D8EC]">
+                  <p className="text-gray-500">
                     لم تستلم الرمز؟{" "}
                     <button
                       type="button"
@@ -186,16 +205,16 @@ export default function VerifyPage() {
                         setTimeout(() => setResent(false), 3000);
                         startCooldown();
                       }}
-                      className={`font-semibold transition-all ${
+                      className={`font-semibold transition-all pointer-events-none select-none ${
                         cooldown > 0
-                          ? "text-gray-400 cursor-not-allowed"
-                          : "text-[#7CC043] hover:underline cursor-pointer"
+                          ? "text-gray-300 cursor-not-allowed opacity-50"
+                          : "text-red-600 hover:underline cursor-pointer pointer-events-auto"
                       }`}
                     >
                       {cooldown > 0 ? `إعادة الإرسال (${cooldown}s)` : "إعادة الإرسال"}
                     </button>
                   </p>
-                  <Link href="/checkout" className="flex items-center gap-1 text-[#B8D8EC] font-medium hover:text-white transition-colors">
+                  <Link href="/checkout" className="flex items-center gap-1 text-gray-400 font-medium hover:text-gray-700 transition-colors">
                     → العودة للطلب
                   </Link>
                 </div>
@@ -203,15 +222,15 @@ export default function VerifyPage() {
             </form>
 
             {/* Decorative blobs */}
-            <div className="absolute -top-12 -right-12 w-32 h-32 bg-[#7CC043]/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-[#B8D8EC]/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -top-12 -right-12 w-32 h-32 bg-red-100/40 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-red-50/40 rounded-full blur-3xl pointer-events-none" />
           </div>
 
           {/* Contextual Help */}
-          <div className="mt-8 flex justify-center gap-8">
-            <div className="flex items-center gap-2 text-[#B8D8EC]/70">
+          <div className="mt-6 flex justify-center">
+            <div className="flex items-center gap-2 text-gray-400">
               <ShieldCheck className="w-4 h-4" />
-              <span className="text-xs uppercase tracking-wider">وصول آمن</span>
+              <span className="text-xs tracking-wider">وصول آمن ومشفر</span>
             </div>
           </div>
 

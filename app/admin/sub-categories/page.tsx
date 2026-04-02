@@ -18,6 +18,12 @@ const EditIcon = () => (
   </svg>
 );
 
+const ImageIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+  </svg>
+);
+
 export default function SubCategoriesPage() {
   const [items, setItems] = useState<SubCat[]>([]);
   const [settings, setSettings] = useState<Settings[]>([]);
@@ -34,6 +40,8 @@ export default function SubCategoriesPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [addName, setAddName] = useState("");
   const [addLoading, setAddLoading] = useState(false);
+  const [imageUploadCat, setImageUploadCat] = useState<SubCat | null>(null);
+  const [imageUploading, setImageUploading] = useState(false);
 
   function getSetting(cat: SubCat): Settings | undefined {
     return settings.find((s) => s.category === cat.category && s.subCategory === cat.name);
@@ -52,6 +60,22 @@ export default function SubCategoriesPage() {
     setItems([...fromProducts, ...extra.filter((c) => !names.has(c.name))]);
     if (res2.ok) setSettings(await res2.json());
     if (res3.ok) { const d = await res3.json(); setMax(d?.max ?? 4); }
+  }
+
+  async function handleImageUpload(file: File) {
+    if (!imageUploadCat) return;
+    setImageUploading(true);
+    const fd = new FormData();
+    fd.append("image", file);
+    const res = await apiFetch(`/api/admin/sub-categories/image/${encodeURIComponent(imageUploadCat.category)}`, {
+      method: "POST",
+      credentials: "include",
+      body: fd,
+    });
+    setImageUploading(false);
+    if (!res.ok) return toast.error("حدث خطأ أثناء رفع الصورة");
+    toast.success("تم تغيير الصورة بنجاح ✅");
+    setImageUploadCat(null);
   }
 
   async function handleAdd(e: React.FormEvent) {
@@ -232,6 +256,12 @@ export default function SubCategoriesPage() {
                           className="text-blue-500 hover:text-blue-700" title="تعديل"
                         >
                           <EditIcon />
+                        </button>
+                        <button
+                          onClick={() => setImageUploadCat(cat)}
+                          className="text-green-500 hover:text-green-700" title="تغيير الصورة"
+                        >
+                          <ImageIcon />
                         </button>
                         <button
                           onClick={() => setConfirmDelete(cat)}

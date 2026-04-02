@@ -79,7 +79,6 @@ export const navItems: NavItem[] = [
     label: "الاجهزة اللوحية ايبادات",
     href: "/tablets",
     children: [
-      { label: "أبل", href: "/tablets/ipad-pro" },
       { label: "ايبادات ابل", href: "/tablets/ipad-air" },
     ],
   },
