@@ -51,7 +51,7 @@ export const slugConfigs: Record<string, SlugConfig> = {
     label: "آيفون 15 برو",
     parentLabel: "الهواتف الذكية",
     parentHref: "/smartphones",
-    filters: { category: "ابل ايفون 15 برو" },
+    filters: { brand: "Apple", nameIncludes: ["15 Pro", "15 pro", "15 برو"] },
   },
   "iphone-15-plus": {
     label: "آيفون 15 بلس",
@@ -147,7 +147,7 @@ export const slugConfigs: Record<string, SlugConfig> = {
     label: "سامسونج جالاكسي S25 الترا",
     parentLabel: "الهواتف الذكية",
     parentHref: "/smartphones",
-    filters: { brand: "Samsung", nameIncludes: ["s25 ultra", "S25 Ultra", "s25 الترا", "اس 25 الترا", "galaxy s25 ultra"] },
+    filters: { category: "سامسونج جالاكسي S25" },
   },
   "samsung-s26-ultra": {
     label: "سامسونج جالاكسي S26",
