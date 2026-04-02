@@ -1,83 +1,18 @@
 import CategorySlider from "./CategorySlider";
+import { slugConfigs } from "../lib/categoryConfig";
 
 const BACKEND = process.env.BACKEND_URL || "https://tabaraktech.com/api/tabarak";
 
-const categoryPageMap: Record<string, string> = {
-  // ─── Smartphones ───────────────────────────────────────────
-  smartphone: "/smartphones",
-  smartphones: "/smartphones",
-  "الهواتف الذكية": "/smartphones",
-  "ابل ايفون 13 برو ماكس": "/smartphones/iphone-13-pro-max",
-  "ابل ايفون 14 برو ماكس": "/smartphones/iphone-14-pro-max",
-  "ابل ايفون 14 برو": "/smartphones/iphone-14-pro",
-  "ابل ايفون 14 بلس": "/smartphones/iphone-14-plus",
-  "ابل ايفون 14": "/smartphones/iphone-14",
-  "ابل ايفون 15 برو ماكس": "/smartphones/iphone-15-pro-max",
-  "ابل ايفون 15 برو": "/smartphones/iphone-15-pro",
-  "ابل ايفون 15 بلس": "/smartphones/iphone-15-plus",
-  "ابل ايفون 15": "/smartphones/iphone-15",
-  "ابل ايفون 16 برو ماكس": "/smartphones/iphone-16-pro-max",
-  "ابل ايفون 16 برو": "/smartphones/iphone-16-pro",
-  "ابل ايفون 16 بلس": "/smartphones/iphone-16-plus",
-  "ابل ايفون 16 عادي": "/smartphones/iphone-16",
-  "ابل ايفون 16": "/smartphones/iphone-16",
-  "ابل ايفون 17 برو ماكس": "/smartphones/iphone-17-pro-max",
-  "ابل ايفون 17برو ماكس": "/smartphones/iphone-17-pro-max",
-  "ابل ايفون 17 برو": "/smartphones/iphone-17-pro",
-  "ابل ايفون 17 اير": "/smartphones/iphone-17-air",
-  "ابل ايفون 17": "/smartphones/iphone-17",
-  "سامسونج جالكسي": "/smartphones/samsung-s25-ultra",
-  "سامسونج جالكسي اس 22 الترا": "/smartphones/samsung-s22-ultra",
-  "سامسونج جالكسي اس 23 الترا": "/smartphones/samsung-s23-ultra",
-  "سامسونج جالكسي اس 24 الترا": "/smartphones/samsung-s24-ultra",
-  "سامسونج جالكسي اس 25 الترا": "/smartphones/samsung-s25-ultra",
-  "سامسونج جالكسي اس 26 الترا": "/smartphones/samsung-s26-ultra",
-
-  // ─── Watches ───────────────────────────────────────────────
-  watch: "/apple-watches/se",
-  "smart-watch": "/smart-watches/smart-watches",
-  smartwatch: "/smart-watches/smart-watches",
-  "ساعات ذكية": "/smart-watches/smart-watches",
-  "الساعات الذكية": "/smart-watches/smart-watches",
-  "ساعات ابل": "/apple-watches/se",
-  "ساعات أبل": "/apple-watches/se",
-
-  // ─── Audio ─────────────────────────────────────────────────
-  audio: "/audio/airpods-pro",
-  "سماعات ابل": "/audio/airpods-pro",
-  "سماعات أبل": "/audio/airpods-pro",
-  speaker: "/audio/airpods-max",
-  earbuds: "/audio/samsung-buds",
-
-  // ─── PlayStation ───────────────────────────────────────────
-  ps5: "/playstation/ps5",
-  ps4: "/playstation/ps5-slim",
-  xbox: "/playstation/xbox-one",
-  controller: "/playstation/controllers",
-  "gaming-accessories": "/playstation/ps-accessories",
-  "بلاي ستيشن": "/playstation/ps5",
-
-  // ─── Laptops & Monitors ────────────────────────────────────
-  laptop: "/laptops/macbook-pro",
-  monitor: "/laptops/samsung-monitors",
-  "لابتوبات": "/laptops/macbook-pro",
-
-  // ─── Tablets ───────────────────────────────────────────────
-  tablet: "/tablets/ipad-pro",
-  "ايبادات": "/tablets/ipad-pro",
-
-  // ─── Accessories ───────────────────────────────────────────
-  powerbank: "/accessories/anker-batteries",
-  "ملحقات": "/accessories/anker-batteries",
-
-  // ─── Games ─────────────────────────────────────────────────
-  gaming: "/games/ps5-games",
-  "mice-keyboards": "/games/mice-keyboards",
-  microphone: "/games/microphones",
-  figures: "/games/figures",
-  rgb: "/games/rgb-lighting",
-  "العاب": "/games/ps5-games",
-};
+// بنبني الـ map تلقائياً من slugConfigs عشان يكون دايماً متزامن
+const categoryPageMap: Record<string, string> = {};
+for (const [slug, config] of Object.entries(slugConfigs)) {
+  const catFilter = config.filters.category;
+  if (catFilter && !categoryPageMap[catFilter]) {
+    // نحدد الـ parent path من parentHref
+    const parent = config.parentHref.replace(/^\//, "").split("/")[0];
+    categoryPageMap[catFilter] = `/${parent}/${slug}`;
+  }
+}
 
 type Category = { name: string; count: number; image: string };
 type Setting = { category: string; subCategory: string; showInHome: boolean; order: number };
@@ -109,9 +44,7 @@ export default async function ShopByCategory() {
 
   const categoriesWithHref = categories.map((cat) => {
     const name = cat.name?.trim();
-    const href = categoryPageMap[name] ?? categoryPageMap[name?.toLowerCase()]
-      ?? Object.entries(categoryPageMap).find(([k]) => name?.includes(k) || k.includes(name))?.[1]
-      ?? "#";
+    const href = categoryPageMap[name] ?? categoryPageMap[name?.toLowerCase()] ?? `/search?q=${encodeURIComponent(name)}`;
     return { ...cat, href };
   });
 
