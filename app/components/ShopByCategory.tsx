@@ -26,13 +26,18 @@ async function getCategories(): Promise<Category[]> {
     const allCats: Category[] = catRes.ok ? await catRes.json() : [];
     const settings: Setting[] = settingsRes.ok ? await settingsRes.json() : [];
 
-    const visibleSet = new Map(
+    const orderMap = new Map(
       settings.filter((s) => s.showInHome).map((s) => [s.category, s.order])
     );
 
-    return allCats
-      .filter((c) => visibleSet.has(c.name))
-      .sort((a, b) => (visibleSet.get(a.name) ?? 0) - (visibleSet.get(b.name) ?? 0));
+    return allCats.sort((a, b) => {
+      const aHome = orderMap.has(a.name);
+      const bHome = orderMap.has(b.name);
+      if (aHome && !bHome) return -1;
+      if (!aHome && bHome) return 1;
+      if (aHome && bHome) return (orderMap.get(a.name) ?? 0) - (orderMap.get(b.name) ?? 0);
+      return 0;
+    });
   } catch {
     return [];
   }

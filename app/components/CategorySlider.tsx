@@ -17,7 +17,7 @@ export default function CategorySlider({ categories }: { categories: Category[] 
         .marquee-track {
           display: flex;
           width: max-content;
-          animation: marquee 30s linear infinite;
+          animation: marquee 60s linear infinite;
         }
         .marquee-track:hover {
           animation-play-state: paused;
