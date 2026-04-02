@@ -269,7 +269,7 @@ export const slugConfigs: Record<string, SlugConfig> = {
     label: "بطاريات متنقلة",
     parentLabel: "بطاريات متنقلة وكيابل",
     parentHref: "/accessories",
-    filters: { category: "powerbank" },
+    filters: { category: "بطاريات متنقله" },
   },
 
   // ─── Games ─────────────────────────────────────────────────
