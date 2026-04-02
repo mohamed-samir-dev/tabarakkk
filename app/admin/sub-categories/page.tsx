@@ -393,6 +393,22 @@ export default function SubCategoriesPage() {
         </div>
       )}
 
+      {/* Image Upload Modal */}
+      {imageUploadCat && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4" dir="rtl">
+          <div className="bg-white rounded-xl p-5 sm:p-6 w-full max-w-sm shadow-xl text-center">
+            <h2 className="text-base sm:text-lg font-bold text-gray-800 mb-3">تغيير صورة: {imageUploadCat.category}</h2>
+            <label className="block border-2 border-dashed border-gray-300 rounded-xl p-6 cursor-pointer hover:border-blue-400 transition-colors mb-3">
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => { if (e.target.files?.[0]) handleImageUpload(e.target.files[0]); }} />
+              <span className="text-sm text-gray-500">{imageUploading ? "جاري الرفع..." : "اضغط لاختيار صورة"}</span>
+            </label>
+            <button onClick={() => setImageUploadCat(null)} className="w-full border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 text-sm">
+              إلغاء
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Confirm Delete */}
       {confirmDelete && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4" dir="rtl">
