@@ -15,6 +15,7 @@ export default function VerifyPage() {
   const [dbOrderId, setDbOrderId] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // eslint-disable-next-line spellcheck/spell-checker
   function startCooldown() {
     localStorage.setItem("resendUnlockAt", String(Date.now() + 60000));
     setCooldown(60);
@@ -29,18 +30,39 @@ export default function VerifyPage() {
   const { customer } = useCartStore();
   const orderId = typeof window !== "undefined" ? localStorage.getItem("orderId") ?? "—" : "—";
 
+  // Initialize cooldown timer on component mount
   useEffect(() => {
-    const unlockAt = Number(localStorage.getItem("resendUnlockAt") ?? 0);
-    const remaining = Math.ceil((unlockAt - Date.now()) / 1000);
+    // بدء العد التنازلي فور دخول الصفحة
+    const currentTime = Date.now();
+    let unlockAt = Number(localStorage.getItem("resendUnlockAt") ?? 0);
+    
+    // إذا لم يكن هناك وقت محفوظ أو انتهى الوقت، ابدأ عد تنازلي جديد
+    if (unlockAt <= currentTime) {
+      unlockAt = currentTime + 60000; // 60 ثانية من الآن
+      localStorage.setItem("resendUnlockAt", String(unlockAt));
+    }
+    
+    const remaining = Math.ceil((unlockAt - currentTime) / 1000);
     if (remaining <= 0) return;
-    setCooldown(remaining);
-    cooldownRef.current = setInterval(() => {
-      setCooldown((prev) => {
-        if (prev <= 1) { clearInterval(cooldownRef.current!); return 0; }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(cooldownRef.current!);
+    
+    // Use a timeout to set the initial cooldown value
+    const timeoutId = setTimeout(() => {
+      setCooldown(remaining);
+      cooldownRef.current = setInterval(() => {
+        setCooldown((prev) => {
+          if (prev <= 1) { 
+            clearInterval(cooldownRef.current!);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }, 0);
+    
+    return () => {
+      clearTimeout(timeoutId);
+      if (cooldownRef.current) clearInterval(cooldownRef.current);
+    };
   }, []);
 
   // polling
