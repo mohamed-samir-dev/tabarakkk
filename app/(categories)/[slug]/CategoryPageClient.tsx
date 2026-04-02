@@ -13,11 +13,14 @@ function filterProducts(products: Product[], slug: string): Product[] {
   const { brand, category, nameIncludes } = config.filters;
   return products.filter((p) => {
     const matchBrand = brand ? p.brand?.toLowerCase() === brand.toLowerCase() : true;
-    const matchCategory = category ? p.category === category : true;
+    const matchCategory = category ? p.category === category : false;
     const matchName = nameIncludes?.length
       ? nameIncludes.some((kw) => p.name?.toLowerCase().includes(kw.toLowerCase()))
-      : true;
-    return matchBrand && matchCategory && matchName;
+      : false;
+    if (nameIncludes?.length && category) return (matchBrand && matchName) || matchCategory;
+    if (nameIncludes?.length) return matchBrand && matchName;
+    if (category) return matchCategory;
+    return matchBrand;
   });
 }
 

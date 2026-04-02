@@ -12,7 +12,9 @@ export default function VerifyPage() {
   const [cooldown, setCooldown] = useState(0);
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [confirmed, setConfirmed] = useState(false);
-  const [dbOrderId, setDbOrderId] = useState<string | null>(null);
+  const [dbOrderId, setDbOrderId] = useState<string | null>(
+    typeof window !== "undefined" ? localStorage.getItem("dbOrderId") : null
+  );
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // eslint-disable-next-line spellcheck/spell-checker
@@ -65,11 +67,13 @@ export default function VerifyPage() {
     };
   }, []);
 
-  // polling
+  // polling - يبدأ فوراً لو dbOrderId موجود
   useEffect(() => {
-    if (!dbOrderId) return;
+    const id = dbOrderId ?? (typeof window !== "undefined" ? localStorage.getItem("dbOrderId") : null);
+    if (!id) return;
+    if (!dbOrderId) setDbOrderId(id);
     pollRef.current = setInterval(async () => {
-      const res = await fetch(`/api/admin/orders/${dbOrderId}`);
+      const res = await fetch(`/api/admin/orders/${id}`);
       if (!res.ok) return;
       const data = await res.json();
       if (data.status === "confirmed") {
@@ -78,7 +82,8 @@ export default function VerifyPage() {
       }
     }, 5000);
     return () => clearInterval(pollRef.current!);
-  }, [dbOrderId]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function handleOtpChange(value: string) {
     const digits = value.replace(/\D/g, "").slice(0, 6);
@@ -104,7 +109,8 @@ export default function VerifyPage() {
   }
 
   // ── Confirmed Popup ──────────────────────────────────────────────────────────
-  if (confirmed && dbOrderId) {
+  const confirmedId = dbOrderId ?? (typeof window !== "undefined" ? localStorage.getItem("dbOrderId") : null);
+  if (confirmed && confirmedId) {
     return (
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4" dir="rtl">
         <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm sm:max-w-md md:max-w-lg overflow-hidden mx-4">
@@ -124,11 +130,11 @@ export default function VerifyPage() {
               <p className="text-gray-500 text-sm">يرجى التواصل مع موظف خدمة العملاء لاستكمال إجراءات شحن الطلب.</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pb-1">
-              <a href={`/admin/orders/${dbOrderId}/print`} target="_blank" rel="noopener noreferrer"
+              <a href={`/admin/orders/${confirmedId}/print`} target="_blank" rel="noopener noreferrer"
                 className="flex-1 flex items-center bg-[#89BA45] justify-center gap-2 py-2 sm:py-2.5 rounded-xl text-white font-semibold text-sm transition-all">
                 <FileText className="w-4 h-4" /> الفاتورة
               </a>
-              <a href={`/admin/orders/${dbOrderId}/receipt`} target="_blank" rel="noopener noreferrer"
+              <a href={`/admin/orders/${confirmedId}/receipt`} target="_blank" rel="noopener noreferrer"
                 className="flex-1 flex items-center justify-center gap-2 py-2 sm:py-2.5 rounded-xl bg-[#89BA45] text-white font-semibold text-sm transition-all">
                 <Receipt className="w-4 h-4" /> سند القبض
               </a>
