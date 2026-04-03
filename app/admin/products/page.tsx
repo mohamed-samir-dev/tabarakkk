@@ -11,6 +11,8 @@ type Product = {
   salePrice?: number;
 };
 
+type SubCat = { name: string; category: string; count: number };
+
 const TrashIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
@@ -26,6 +28,8 @@ const EditIcon = () => (
 export default function ProductsPage() {
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
+  const [subCats, setSubCats] = useState<SubCat[]>([]);
+  const [selectedCat, setSelectedCat] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; name: string } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,6 +44,9 @@ export default function ProductsPage() {
     fetch("/api/admin/products", { credentials: "include" })
       .then((res) => res.ok ? res.json() : null)
       .then((data) => { if (data) setProducts(data); });
+    fetch("/api/admin/sub-categories", { credentials: "include" })
+      .then((res) => res.ok ? res.json() : [])
+      .then((data: SubCat[]) => setSubCats(data));
   }, []);
 
   async function confirmDeleteAction() {
@@ -54,9 +61,11 @@ export default function ProductsPage() {
     fetchProducts();
   }
 
-  const filtered = products.filter(
-    (p) => p.name?.includes(search) || p.category?.includes(search)
-  );
+  const filtered = products.filter((p) => {
+    const matchSearch = p.name?.includes(search) || p.category?.includes(search);
+    const matchCat = !selectedCat || p.category === selectedCat;
+    return matchSearch && matchCat;
+  });
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
@@ -71,6 +80,30 @@ export default function ProductsPage() {
           + إضافة منتج
         </button>
       </div>
+
+      {subCats.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-4">
+          <button
+            onClick={() => { setSelectedCat(null); setCurrentPage(1); }}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+              !selectedCat ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"
+            }`}
+          >
+            الكل ({products.length})
+          </button>
+          {subCats.map((cat) => (
+            <button
+              key={cat.category}
+              onClick={() => { setSelectedCat(cat.category); setCurrentPage(1); }}
+              className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                selectedCat === cat.category ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"
+              }`}
+            >
+              {cat.category} ({cat.count})
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="bg-white rounded-xl shadow overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3 border-b border-gray-100">
