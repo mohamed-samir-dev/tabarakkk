@@ -19,7 +19,7 @@ export default function ProductCard({ product, priority = false }: { product: Pr
   const image = product.images?.[0] || product.image;
   const resolvedImage = image ? resolveImg(image) : undefined;
   const originalPrice = product.originalPrice ?? product.price ?? 0;
-  const hasDiscount = salePrice && salePrice < originalPrice;
+  const hasDiscount = salePrice != null && salePrice !== originalPrice;
   const addItem = useCartStore((s) => s.addItem);
   const router = useRouter();
   const [added, setAdded] = useState(false);

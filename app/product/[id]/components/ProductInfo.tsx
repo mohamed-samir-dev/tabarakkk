@@ -16,7 +16,7 @@ export default function ProductInfo({ product, addedToCart, onAddToCart }: Produ
   const router = useRouter();
   const { name, brand, color, storage, network, salePrice, taxIncluded, installment, freeDelivery, deliveryTime, inStock } = product;
   const originalPrice = product.originalPrice ?? 0;
-  const hasDiscount = salePrice && salePrice < originalPrice;
+  const hasDiscount = salePrice != null && salePrice !== originalPrice;
 
   return (
     <div className="flex flex-col gap-3 sm:gap-4">

@@ -227,17 +227,13 @@ export default function EditProductPage() {
           </Field>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-           
-            <Field label="السعر الجديد (سعر البيع)">
+            <Field label="السعر الأصلي (المشطوب عليه)">
+              <input type="number" value={form.originalPrice} onChange={(e) => set("originalPrice", e.target.value)} className={inputCls} required min="0" step="0.01" placeholder="0.00" />
+            </Field>
+            <Field label="سعر البيع (بعد الخصم)">
               <input type="number" value={form.salePrice} onChange={(e) => set("salePrice", e.target.value)} className={inputCls} min="0" step="0.01" placeholder="0.00" />
             </Field>
-            <Field label="السعر القديم (المشطوب عليه)">
-              <input type="number" value={form.originalPrice} onChange={(e) => set("originalPrice", e.target.value)} className={inputCls} required min="0" step="0.01" />
-            </Field>
           </div>
-          {form.salePrice && form.originalPrice && Number(form.salePrice) >= Number(form.originalPrice) && (
-            <p className="text-red-500 text-sm">⚠️ سعر البيع يجب أن يكون أقل من السعر الأصلي</p>
-          )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="التصنيف">
