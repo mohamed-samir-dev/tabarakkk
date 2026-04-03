@@ -63,11 +63,10 @@ export const navItems: NavItem[] = [
     href: "/playstation",
   },
   {
-    label: "لابتوبات وشاشات",
+    label: "لابتوبات ",
     href: "/laptops",
     children: [
       { label: "ماك بوك اير", href: "/laptops/macbook-air" },
-      { label: "شاشات سامسونج", href: "/laptops/samsung-monitors" },
     ],
   },
   {
@@ -85,13 +84,8 @@ export const navItems: NavItem[] = [
     ],
   },
   {
-    label: "ألعاب الفيديو",
+    label: "اكسسورات ",
     href: "/games",
-    children: [
-      { label: "ماوسات وكيبوردات ألعاب", href: "/games/mice-keyboards" },
-      { label: "مايكروفونات", href: "/games/microphones" },
-      { label: "مجسمات وفيقرز", href: "/games/figures" },
-      { label: " اضاءات RGB", href: "/games/rgb-lighting" },
-    ],
+   
   },
 ];
