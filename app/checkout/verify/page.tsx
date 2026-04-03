@@ -130,11 +130,11 @@ export default function VerifyPage() {
               <p className="text-gray-500 text-sm">يرجى التواصل مع موظف خدمة العملاء لاستكمال إجراءات شحن الطلب.</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pb-1">
-              <a href={`/admin/orders/${confirmedId}/print`} target="_blank" rel="noopener noreferrer"
+              <a href={`/invoice/${confirmedId}`} target="_blank" rel="noopener noreferrer"
                 className="flex-1 flex items-center bg-[#89BA45] justify-center gap-2 py-2 sm:py-2.5 rounded-xl text-white font-semibold text-sm transition-all">
                 <FileText className="w-4 h-4" /> الفاتورة
               </a>
-              <a href={`/admin/orders/${confirmedId}/receipt`} target="_blank" rel="noopener noreferrer"
+              <a href={`/invoice/${confirmedId}/receipt`} target="_blank" rel="noopener noreferrer"
                 className="flex-1 flex items-center justify-center gap-2 py-2 sm:py-2.5 rounded-xl bg-[#89BA45] text-white font-semibold text-sm transition-all">
                 <Receipt className="w-4 h-4" /> سند القبض
               </a>
