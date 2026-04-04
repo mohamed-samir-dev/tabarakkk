@@ -6,5 +6,9 @@ export function getBackend(): string {
 
 export function forwardCookies(req: NextRequest, init: RequestInit): RequestInit {
   const cookie = req.headers.get("cookie") || "";
-  return { ...init, headers: { ...(init.headers as Record<string, string>), cookie } };
+  const existing = init.headers as Record<string, string> | undefined;
+  return {
+    ...init,
+    headers: { ...existing, ...(cookie ? { cookie } : {}) },
+  };
 }
