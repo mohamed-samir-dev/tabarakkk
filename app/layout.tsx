@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const logoUrl = c.logo
     ? (c.logo.startsWith("http") ? c.logo : `${SITE_URL}/api/tabarak${c.logo}`)
-    : `${SITE_URL}/og-image.png`;
+    : `${SITE_URL}/android-chrome-512x512.png`;
 
   return {
     metadataBase: new URL(SITE_URL),
