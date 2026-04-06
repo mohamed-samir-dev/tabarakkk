@@ -33,10 +33,17 @@ export async function POST(req: NextRequest) {
 
   const setCookie = res.headers.get("set-cookie");
   if (setCookie) {
-    try {
-      response.headers.set("set-cookie", setCookie);
-    } catch {
-      // ignore header errors
+    // Extract token value from the set-cookie header
+    const tokenMatch = setCookie.match(/admin_token=([^;]+)/);
+    if (tokenMatch) {
+      const isProd = process.env.NODE_ENV === "production";
+      response.cookies.set("admin_token", tokenMatch[1], {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
+        maxAge: 8 * 60 * 60,
+        path: "/",
+      });
     }
   }
 

@@ -20,8 +20,8 @@ export default function CategoryItemsPage() {
       apiFetch("/api/admin/sub-categories/settings", { credentials: "include" }).then((r) => r.json()),
       apiFetch("/api/admin/sub-categories/settings/max", { credentials: "include" }).then((r) => r.json()),
     ]).then(([subs, sets, maxData]) => {
-      setItems(subs);
-      setSettings(sets);
+      setItems(Array.isArray(subs) ? subs : []);
+      setSettings(Array.isArray(sets) ? sets : []);
       const m = maxData?.max ?? 4;
       setMax(m);
       setMaxInput(m);
