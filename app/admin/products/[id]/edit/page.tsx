@@ -91,10 +91,8 @@ export default function EditProductPage() {
   const displayImage = imagePreview || currentImage;
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-2xl space-y-5 py-4">
-      <div className="flex items-center justify-between mb-2">
-        <h1 className="text-xl font-bold text-gray-800">تعديل المنتج</h1>
-      </div>
+    <form onSubmit={handleSubmit} className="w-full max-w-lg mx-auto space-y-4 py-4">
+      <h1 className="text-xl font-bold text-gray-800">تعديل المنتج</h1>
 
       {/* Image */}
       <input ref={imageInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleImageChange} />
