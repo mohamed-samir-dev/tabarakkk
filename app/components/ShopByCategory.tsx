@@ -3,19 +3,35 @@ import { slugConfigs } from "../lib/categoryConfig";
 
 const BACKEND = process.env.BACKEND_URL || "https://tabaraktech.com/api/tabarak";
 
-// map من اسم الـ category أو الـ label للـ slug path
-const categoryPageMap: Record<string, string> = {};
-for (const [slug, config] of Object.entries(slugConfigs)) {
-  const parent = config.parentHref.replace(/^\//, "").split("/")[0];
-  const path = `/${parent}/${slug}`;
-  // نربط بالـ category filter لو موجود
-  if (config.filters.category && !categoryPageMap[config.filters.category]) {
-    categoryPageMap[config.filters.category] = path;
+function resolveHref(catName: string): string {
+  const name = catName?.trim();
+  if (!name) return "/";
+
+  // أقسام الصوت كلها توديها لـ /audio مباشرة
+  if (
+    name.toLowerCase().includes("سماعات") ||
+    name.toLowerCase() === "speaker" ||
+    name.toLowerCase() === "earbuds"
+  ) return "/audio";
+
+  // اكسسورات توديها لـ /games
+  if (name === "اكسسورات") return "/games";
+
+  // بطاريات متنقلة توديها لـ /accessories/anker-batteries
+  if (name.includes("بطاريات")) return "/accessories/anker-batteries";
+
+  for (const [slug, config] of Object.entries(slugConfigs)) {
+    const parent = config.parentHref.replace(/^\//, "").split("/")[0];
+    const path = `/${parent}/${slug}`;
+
+    // مطابقة مباشرة بالـ category filter
+    if (config.filters.category && config.filters.category === name) return path;
+
+    // مطابقة بالـ nameIncludes
+    if (config.filters.nameIncludes?.some((kw) => name.toLowerCase().includes(kw.toLowerCase()))) return path;
   }
-  // نربط بالـ label كمان عشان يشمل الأقسام اللي عندها nameIncludes بس
-  if (!categoryPageMap[config.label]) {
-    categoryPageMap[config.label] = path;
-  }
+
+  return `/search?q=${encodeURIComponent(name)}`;
 }
 
 type Category = { name: string; count: number; image: string };
@@ -51,15 +67,10 @@ export default async function ShopByCategory() {
   const categories = await getCategories();
   if (!categories.length) return null;
 
-  const categoriesWithHref = categories.map((cat) => {
-    const name = cat.name?.trim();
-    const href =
-      categoryPageMap[name] ??
-      categoryPageMap[name?.toLowerCase()] ??
-      categoryPageMap[name?.toUpperCase()] ??
-      `/search?q=${encodeURIComponent(name)}`;
-    return { ...cat, href };
-  });
+  const categoriesWithHref = categories.map((cat) => ({
+    ...cat,
+    href: resolveHref(cat.name),
+  }));
 
   return (
     <div className="w-full px-3 sm:px-6 py-4" dir="rtl">

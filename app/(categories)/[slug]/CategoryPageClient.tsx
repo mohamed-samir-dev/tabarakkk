@@ -13,7 +13,7 @@ function filterProducts(products: Product[], slug: string): Product[] {
   const { brand, category, nameIncludes } = config.filters;
   return products.filter((p) => {
     const matchBrand = brand ? p.brand?.toLowerCase() === brand.toLowerCase() : true;
-    const matchCategory = category ? p.category === category : false;
+    const matchCategory = category ? p.category?.trim().toLowerCase() === category.trim().toLowerCase() : false;
     const matchName = nameIncludes?.length
       ? nameIncludes.some((kw) => p.name?.toLowerCase().includes(kw.toLowerCase()))
       : false;
@@ -27,16 +27,14 @@ function filterProducts(products: Product[], slug: string): Product[] {
 export default function CategoryPageClient({ slug }: { slug: string }) {
   const config = slugConfigs[slug];
 
-  if (!config) notFound();
-
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const ITEMS_PER_PAGE = 12;
 
   useEffect(() => {
-    if (!slug) return;
-    const brand = config?.filters.brand ?? "";
+    if (!config) return;
+    const brand = config.filters.brand ?? "";
     const query = brand ? `?brand=${encodeURIComponent(brand)}` : "";
     fetch(`/api/products${query}`)
       .then((r) => r.json())
@@ -64,11 +62,13 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [slug, config?.filters.brand]);
+  }, [slug, config]);
 
-  const label = config?.label ?? slug;
-  const parentLabel = config?.parentLabel ?? "";
-  const parentHref = config?.parentHref ?? "/";
+  if (!config) return notFound();
+
+  const label = config.label ?? slug;
+  const parentLabel = config.parentLabel ?? "";
+  const parentHref = config.parentHref ?? "/";
 
   return (
     <main className="min-h-screen bg-white" dir="rtl">

@@ -15,11 +15,17 @@ export default function AudioClient() {
     fetch(`/api/products`)
       .then((r) => r.json())
       .then((data: Product[]) => {
-        const filtered = data.filter((p) =>
-          p.category?.includes("سماعات ابل") ||
-          p.category?.includes("سماعات أبل") ||
-          p.subCategory?.includes("سماعات")
-        );
+        const filtered = data.filter((p) => {
+          const cat = p.category?.trim().toLowerCase();
+          const sub = p.subCategory?.trim().toLowerCase();
+          return (
+            cat?.includes("سماعات") ||
+            cat === "speaker" ||
+            cat === "earbuds" ||
+            sub?.includes("سماعات") ||
+            sub?.includes("audio")
+          );
+        });
         setProducts(filtered);
       })
       .catch(console.error)
