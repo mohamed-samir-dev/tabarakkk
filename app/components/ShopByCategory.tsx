@@ -3,14 +3,18 @@ import { slugConfigs } from "../lib/categoryConfig";
 
 const BACKEND = process.env.BACKEND_URL || "https://tabaraktech.com/api/tabarak";
 
-// بنبني الـ map تلقائياً من slugConfigs عشان يكون دايماً متزامن
+// map من اسم الـ category أو الـ label للـ slug path
 const categoryPageMap: Record<string, string> = {};
 for (const [slug, config] of Object.entries(slugConfigs)) {
-  const catFilter = config.filters.category;
-  if (catFilter && !categoryPageMap[catFilter]) {
-    // نحدد الـ parent path من parentHref
-    const parent = config.parentHref.replace(/^\//, "").split("/")[0];
-    categoryPageMap[catFilter] = `/${parent}/${slug}`;
+  const parent = config.parentHref.replace(/^\//, "").split("/")[0];
+  const path = `/${parent}/${slug}`;
+  // نربط بالـ category filter لو موجود
+  if (config.filters.category && !categoryPageMap[config.filters.category]) {
+    categoryPageMap[config.filters.category] = path;
+  }
+  // نربط بالـ label كمان عشان يشمل الأقسام اللي عندها nameIncludes بس
+  if (!categoryPageMap[config.label]) {
+    categoryPageMap[config.label] = path;
   }
 }
 
@@ -49,7 +53,11 @@ export default async function ShopByCategory() {
 
   const categoriesWithHref = categories.map((cat) => {
     const name = cat.name?.trim();
-    const href = categoryPageMap[name] ?? categoryPageMap[name?.toLowerCase()] ?? `/search?q=${encodeURIComponent(name)}`;
+    const href =
+      categoryPageMap[name] ??
+      categoryPageMap[name?.toLowerCase()] ??
+      categoryPageMap[name?.toUpperCase()] ??
+      `/search?q=${encodeURIComponent(name)}`;
     return { ...cat, href };
   });
 
