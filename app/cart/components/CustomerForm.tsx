@@ -35,8 +35,8 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
   const [nationalId, setNationalId] = useState(initialData?.nationalId ?? "");
   const [whatsapp, setWhatsapp] = useState(initialData?.whatsapp ?? "");
   const [address, setAddress] = useState(initialData?.address ?? "");
-  const [installmentType, setInstallmentType] = useState<"full" | "installment">(initialData?.installmentType ?? "full");
-  const [months, setMonths] = useState(initialData?.months ?? 3);
+  const [installmentType, setInstallmentType] = useState<"full" | "installment">(initialData?.installmentType ?? "installment");
+  const [months, setMonths] = useState(initialData?.months ?? 24);
   const [downPaymentExtra, setDownPaymentExtra] = useState<number>(0);
   const downPayment = minDownPayment + downPaymentExtra;
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -83,7 +83,7 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
     <>
       <div className="bg-white border border-gray-200 rounded-2xl p-3 sm:p-4 space-y-3">
         <InlineField label="الاسم كاملاً" error={errors.name}>
-          <input value={name} onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: "" })); }} placeholder="محمد أحمد" className={inputClass("name")} />
+          <input value={name} onChange={(e) => { const v = e.target.value.replace(/[^a-zA-Z\u0600-\u06FF\s]/g, ""); setName(v); setErrors((p) => ({ ...p, name: "" })); }} placeholder="محمد أحمد" className={inputClass("name")} />
         </InlineField>
         <InlineField label="رقم الهوية / الإقامة" error={errors.nationalId}>
           <input value={nationalId} onChange={(e) => { const v = e.target.value.replace(/[^0-9]/g, ""); setNationalId(v); setErrors((p) => ({ ...p, nationalId: "" })); }} placeholder="10XXXXXXXX" className={inputClass("nationalId")} />
