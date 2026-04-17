@@ -149,12 +149,9 @@ export default async function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-[#1F6F8B] flex items-center justify-between max-w-6xl mx-auto px-4 py-4 text-xs text-[#E6F2F8]">
+      <div className="border-t border-[#1F6F8B] flex flex-col sm:flex-row items-center justify-between max-w-6xl mx-auto px-4 py-4 text-xs text-[#E6F2F8] gap-3">
         <span>الحقوق محفوظة مؤسسة تبارك التقنية الذكية © 2026</span>
-        <div className="flex gap-2">
-          <Image src="/cc975b.png" alt="بطاقة ائتمانية" width={50} height={30} className="object-contain" style={{ width: "auto" }} />
-          <Image src="/mada975b.png" alt="بطاقة مدى" width={50} height={30} className="object-contain" style={{ width: "auto" }} />
-        </div>
+        <Image src="/فيزا ماستر مدى.webp" alt="Visa Mastercard Mada" width={100} height={30} className="object-contain" style={{ width: "auto" }} />
       </div>
     </footer>
   );

