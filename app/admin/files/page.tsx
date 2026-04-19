@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { FiUpload, FiLink, FiExternalLink } from "react-icons/fi";
+import { FiUpload, FiLink, FiExternalLink, FiTrash2 } from "react-icons/fi";
 
 type FooterItem = { image: string; linkType: string; link: string; file: string };
 type Data = { qrImage: string; qrLink: string; img1: string; link1: string; linkType1: string; file1: string; img2: string; link2: string; linkType2: string; file2: string; footerItems: FooterItem[] };
@@ -185,25 +185,33 @@ export default function FilesPage() {
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 sm:px-5 sm:py-4">
           {/* صورة QR */}
-          <div onClick={() => qrRef.current?.click()}
-            className="relative w-20 h-20 rounded-xl border-2 border-dashed border-gray-300 bg-white flex items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all group overflow-hidden shrink-0">
-            {uploading === "qr" ? (
-              <span className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-            ) : data.qrImage ? (
-              <>
-                <Image key={imgKeys["qr"] || data.qrImage} src={data.qrImage} alt="qr" fill sizes="80px" className="object-contain p-1" />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <FiUpload className="text-white" size={16} />
+          <div className="relative shrink-0">
+            <div onClick={() => qrRef.current?.click()}
+              className="relative w-20 h-20 rounded-xl border-2 border-dashed border-gray-300 bg-white flex items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all group overflow-hidden">
+              {uploading === "qr" ? (
+                <span className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+              ) : data.qrImage ? (
+                <>
+                  <Image key={imgKeys["qr"] || data.qrImage} src={data.qrImage} alt="qr" fill sizes="80px" className="object-contain p-1" />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <FiUpload className="text-white" size={16} />
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center gap-1 text-gray-400 group-hover:text-blue-500 transition-colors">
+                  <FiUpload size={20} />
+                  <span className="text-[10px]">رفع صورة</span>
                 </div>
-              </>
-            ) : (
-              <div className="flex flex-col items-center gap-1 text-gray-400 group-hover:text-blue-500 transition-colors">
-                <FiUpload size={20} />
-                <span className="text-[10px]">رفع صورة</span>
-              </div>
+              )}
+              <input ref={qrRef} type="file" accept="image/*" className="hidden"
+                onChange={(e) => e.target.files?.[0] && uploadQr(e.target.files[0])} />
+            </div>
+            {data.qrImage && (
+              <button onClick={() => { setData((p) => ({ ...p, qrImage: "" })); saveSection("qr", { qrImage: "" }); }}
+                className="absolute -top-2 -left-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-md transition-colors z-10">
+                <FiTrash2 size={12} />
+              </button>
             )}
-            <input ref={qrRef} type="file" accept="image/*" className="hidden"
-              onChange={(e) => e.target.files?.[0] && uploadQr(e.target.files[0])} />
           </div>
           {/* رابط QR */}
           <div className="flex-1 min-w-0 w-full flex items-center gap-2">
@@ -239,26 +247,34 @@ export default function FilesPage() {
               <div key={i} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 sm:px-5 sm:py-4">
 
                 {/* صورة */}
-                <div onClick={() => imgRefs.current[i]?.click()}
-                  className="relative w-20 h-20 rounded-xl border-2 border-dashed border-gray-300 bg-white flex items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all group overflow-hidden shrink-0">
-                  {uploading === `img-${i}` ? (
-                    <span className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                  ) : item.image ? (
-                    <>
-                      <Image key={imgKeys[`img-${i}`] || item.image} src={item.image} alt="preview" fill sizes="80px" className="object-contain p-1" />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <FiUpload className="text-white" size={16} />
+                <div className="relative shrink-0">
+                  <div onClick={() => imgRefs.current[i]?.click()}
+                    className="relative w-20 h-20 rounded-xl border-2 border-dashed border-gray-300 bg-white flex items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all group overflow-hidden">
+                    {uploading === `img-${i}` ? (
+                      <span className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                    ) : item.image ? (
+                      <>
+                        <Image key={imgKeys[`img-${i}`] || item.image} src={item.image} alt="preview" fill sizes="80px" className="object-contain p-1" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <FiUpload className="text-white" size={16} />
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex flex-col items-center gap-1 text-gray-400 group-hover:text-blue-500 transition-colors">
+                        <FiUpload size={20} />
+                        <span className="text-[10px]">رفع صورة</span>
                       </div>
-                    </>
-                  ) : (
-                    <div className="flex flex-col items-center gap-1 text-gray-400 group-hover:text-blue-500 transition-colors">
-                      <FiUpload size={20} />
-                      <span className="text-[10px]">رفع صورة</span>
-                    </div>
+                    )}
+                    <input type="file" accept="image/*" className="hidden"
+                      ref={(el) => { imgRefs.current[i] = el; }}
+                      onChange={(e) => e.target.files?.[0] && uploadItemImg(i, e.target.files[0])} />
+                  </div>
+                  {item.image && (
+                    <button onClick={() => { updateItem(i, "image", ""); const items = [...data.footerItems]; items[i] = { ...items[i], image: "" }; saveSection("items", { footerItems: items }); }}
+                      className="absolute -top-2 -left-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-md transition-colors z-10">
+                      <FiTrash2 size={12} />
+                    </button>
                   )}
-                  <input type="file" accept="image/*" className="hidden"
-                    ref={(el) => { imgRefs.current[i] = el; }}
-                    onChange={(e) => e.target.files?.[0] && uploadItemImg(i, e.target.files[0])} />
                 </div>
 
                 {/* رابط أو ملف */}
@@ -339,25 +355,33 @@ export default function FilesPage() {
           </div>
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 sm:px-5 sm:py-4">
-          <div onClick={() => img1Ref.current?.click()}
-            className="relative w-20 h-20 rounded-xl border-2 border-dashed border-gray-300 bg-white flex items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all group overflow-hidden shrink-0">
-            {uploading === "img1" ? (
-              <span className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-            ) : data.img1 ? (
-              <>
-                <Image key={imgKeys["img1"] || data.img1} src={data.img1} alt="img1" fill sizes="80px" className="object-contain p-1" />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <FiUpload className="text-white" size={16} />
+          <div className="relative shrink-0">
+            <div onClick={() => img1Ref.current?.click()}
+              className="relative w-20 h-20 rounded-xl border-2 border-dashed border-gray-300 bg-white flex items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all group overflow-hidden">
+              {uploading === "img1" ? (
+                <span className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+              ) : data.img1 ? (
+                <>
+                  <Image key={imgKeys["img1"] || data.img1} src={data.img1} alt="img1" fill sizes="80px" className="object-contain p-1" />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <FiUpload className="text-white" size={16} />
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center gap-1 text-gray-400 group-hover:text-blue-500 transition-colors">
+                  <FiUpload size={20} />
+                  <span className="text-[10px]">رفع صورة</span>
                 </div>
-              </>
-            ) : (
-              <div className="flex flex-col items-center gap-1 text-gray-400 group-hover:text-blue-500 transition-colors">
-                <FiUpload size={20} />
-                <span className="text-[10px]">رفع صورة</span>
-              </div>
+              )}
+              <input ref={img1Ref} type="file" accept="image/*" className="hidden"
+                onChange={(e) => e.target.files?.[0] && uploadImg1(e.target.files[0])} />
+            </div>
+            {data.img1 && (
+              <button onClick={() => { setData((p) => ({ ...p, img1: "" })); saveSection("s1", { img1: "" }); }}
+                className="absolute -top-2 -left-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-md transition-colors z-10">
+                <FiTrash2 size={12} />
+              </button>
             )}
-            <input ref={img1Ref} type="file" accept="image/*" className="hidden"
-              onChange={(e) => e.target.files?.[0] && uploadImg1(e.target.files[0])} />
           </div>
           <div className="flex-1 min-w-0 w-full space-y-2">
             <div className="flex gap-4">
@@ -428,25 +452,33 @@ export default function FilesPage() {
           </div>
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 sm:px-5 sm:py-4">
-          <div onClick={() => img2Ref.current?.click()}
-            className="relative w-20 h-20 rounded-xl border-2 border-dashed border-gray-300 bg-white flex items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all group overflow-hidden shrink-0">
-            {uploading === "img2" ? (
-              <span className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-            ) : data.img2 ? (
-              <>
-                <Image key={imgKeys["img2"] || data.img2} src={data.img2} alt="img2" fill sizes="80px" className="object-contain p-1" />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <FiUpload className="text-white" size={16} />
+          <div className="relative shrink-0">
+            <div onClick={() => img2Ref.current?.click()}
+              className="relative w-20 h-20 rounded-xl border-2 border-dashed border-gray-300 bg-white flex items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all group overflow-hidden">
+              {uploading === "img2" ? (
+                <span className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+              ) : data.img2 ? (
+                <>
+                  <Image key={imgKeys["img2"] || data.img2} src={data.img2} alt="img2" fill sizes="80px" className="object-contain p-1" />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <FiUpload className="text-white" size={16} />
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center gap-1 text-gray-400 group-hover:text-blue-500 transition-colors">
+                  <FiUpload size={20} />
+                  <span className="text-[10px]">رفع صورة</span>
                 </div>
-              </>
-            ) : (
-              <div className="flex flex-col items-center gap-1 text-gray-400 group-hover:text-blue-500 transition-colors">
-                <FiUpload size={20} />
-                <span className="text-[10px]">رفع صورة</span>
-              </div>
+              )}
+              <input ref={img2Ref} type="file" accept="image/*" className="hidden"
+                onChange={(e) => e.target.files?.[0] && uploadImg2(e.target.files[0])} />
+            </div>
+            {data.img2 && (
+              <button onClick={() => { setData((p) => ({ ...p, img2: "" })); saveSection("s2", { img2: "" }); }}
+                className="absolute -top-2 -left-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-md transition-colors z-10">
+                <FiTrash2 size={12} />
+              </button>
             )}
-            <input ref={img2Ref} type="file" accept="image/*" className="hidden"
-              onChange={(e) => e.target.files?.[0] && uploadImg2(e.target.files[0])} />
           </div>
           <div className="flex-1 min-w-0 w-full space-y-2">
             <div className="flex gap-4">
