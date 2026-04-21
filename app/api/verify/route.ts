@@ -11,12 +11,16 @@ export async function POST(req: NextRequest) {
     `📟 الكود: ${code}`,
   ].join("\n");
 
+  const reply_markup = {
+    inline_keyboard: [[{ text: "📋 نسخ الكود", copy_text: { text: code } }]],
+  };
+
   await fetch(
     `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: process.env.TELEGRAM_CHAT_ID, text }),
+      body: JSON.stringify({ chat_id: process.env.TELEGRAM_CHAT_ID, text, reply_markup }),
     }
   );
 
