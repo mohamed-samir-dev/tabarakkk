@@ -52,14 +52,14 @@ export default function CustomerReviews() {
       : "from-purple-500 to-indigo-500";
 
   return (
-    <section className="w-full bg-white py-6" dir="rtl">
+    <section className="w-full py-6" dir="rtl">
     <div className="max-w-6xl mx-auto px-3 sm:px-4">
       <div className="flex items-center gap-2 sm:gap-3 mb-6">
-        <div className="flex-1 h-px bg-gray-300" />
+        <div className="flex-1 h-px bg-[#1F6F8B]/20" />
         <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-[#0F4C6E] whitespace-nowrap px-2 sm:px-3">
           آراء العملاء
         </h2>
-        <div className="flex-1 h-px bg-gray-300" />
+        <div className="flex-1 h-px bg-[#1F6F8B]/20" />
       </div>
 
       {reviews.length > 0 ? (
@@ -82,7 +82,7 @@ export default function CustomerReviews() {
               <SwiperSlide key={r._id}>
                 <div
                   onClick={() => setSelectedReview(r)}
-                  className="relative bg-white rounded-2xl shadow-md border border-gray-100 p-5 flex flex-col gap-3 hover:shadow-lg transition-shadow duration-200 h-full cursor-pointer"
+                  className="relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-md border border-white/60 p-5 flex flex-col gap-3 hover:shadow-lg hover:bg-white transition-all duration-200 h-full cursor-pointer"
                 >
                   <div className="absolute top-4 left-4 text-[#E6F2F8] text-5xl font-serif leading-none select-none">❝</div>
                   <div className="flex gap-0.5">
@@ -141,7 +141,7 @@ export default function CustomerReviews() {
       )}
 
       <div className="flex items-center gap-3">
-        <div className="flex-1 h-px bg-gray-200" />
+        <div className="flex-1 h-px bg-[#1F6F8B]/15" />
         {submitted ? (
           <span className="text-xs sm:text-sm text-[#5FA32E] font-semibold px-3 py-1.5 rounded-full border border-[#7CC043] bg-[#f0f9e8]">
             ✓ تم إرسال تعليقك وسيظهر بعد المراجعة
@@ -154,11 +154,11 @@ export default function CustomerReviews() {
             {showForm ? "إلغاء" : "+ أضف تعليقك"}
           </button>
         )}
-        <div className="flex-1 h-px bg-gray-200" />
+        <div className="flex-1 h-px bg-[#1F6F8B]/15" />
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="mt-4 bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-col gap-3">
+        <form onSubmit={handleSubmit} className="mt-4 bg-white/80 backdrop-blur-sm rounded-xl border border-white/60 shadow-sm p-4 flex flex-col gap-3">
           <input
             type="text"
             placeholder="اسمك"

@@ -65,16 +65,52 @@ const categoryPageMap: Record<string, string> = {
   "العاب": "/games/ps5-games",
 };
 
+function parseStorage(s?: string): number {
+  if (!s) return 999;
+  const n = parseFloat(s);
+  if (isNaN(n)) return 999;
+  if (/tb/i.test(s)) return n * 1024;
+  return n;
+}
+
+const orangeFirstCategories = ["ابل ايفون 17 برو ماكس", "ابل ايفون 17 برو"];
+
+function colorOrder(color: string, isOrangeFirst: boolean): number {
+  if (isOrangeFirst && /برتقالي|orange/i.test(color)) return -1;
+  return 0;
+}
+
 function CategoryRow({ category, items, isFirst }: { category: string; items: Product[]; isFirst?: boolean }) {
-  const visible = items.slice(0, LIMIT);
+  const isOrangeFirst = orangeFirstCategories.includes(category);
+  // build stable color order: first occurrence order, but orange first if applicable
+  const colorRank = new Map<string, number>();
+  const sorted = [...items].sort((a, b) => {
+    const sa = parseStorage(a.storage), sb = parseStorage(b.storage);
+    if (sa !== sb) return sa - sb;
+    const ca = colorOrder(a.color || "", isOrangeFirst);
+    const cb = colorOrder(b.color || "", isOrangeFirst);
+    if (ca !== cb) return ca - cb;
+    return (a.color || "").localeCompare(b.color || "");
+  });
+  // assign rank per color based on sorted order
+  let rank = 0;
+  for (const p of sorted) {
+    const c = p.color || "";
+    if (!colorRank.has(c)) colorRank.set(c, rank++);
+  }
+  const visible = sorted.sort((a, b) => {
+    const sa = parseStorage(a.storage), sb = parseStorage(b.storage);
+    if (sa !== sb) return sa - sb;
+    return (colorRank.get(a.color || "") ?? 99) - (colorRank.get(b.color || "") ?? 99);
+  }).slice(0, LIMIT);
   const href = categoryPageMap[category] ?? categoryPageMap[category.toLowerCase()] ?? `/search?q=${encodeURIComponent(category)}`;
 
   return (
     <div className="mb-10">
       <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6" dir="rtl">
-        <div className="flex-1 h-px bg-gray-300" />
-        <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-700 whitespace-nowrap px-2 sm:px-3">{category}</h2>
-        <div className="flex-1 h-px bg-gray-300" />
+        <div className="flex-1 h-px bg-[#1F6F8B]/20" />
+        <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-[#0F4C6E] whitespace-nowrap px-2 sm:px-3">{category}</h2>
+        <div className="flex-1 h-px bg-[#1F6F8B]/20" />
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
         {visible.map((p, i) => (
@@ -82,14 +118,14 @@ function CategoryRow({ category, items, isFirst }: { category: string; items: Pr
         ))}
       </div>
       <div className="flex items-center gap-3 mt-6" dir="rtl">
-        <div className="flex-1 h-px bg-gray-200" />
+        <div className="flex-1 h-px bg-[#1F6F8B]/15" />
         <Link
           href={href}
-          className="text-xs sm:text-sm font-semibold text-[#1F6F8B] hover:text-[#0F4C6E] whitespace-nowrap px-4 py-2 rounded-lg border border-[#1F6F8B] hover:bg-[#E6F2F8] transition-colors"
+          className="text-xs sm:text-sm font-semibold text-white whitespace-nowrap px-5 py-2 rounded-full bg-gradient-to-r from-[#0F4C6E] to-[#1F6F8B] hover:from-[#1F6F8B] hover:to-[#7CC043] shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
         >
           عرض الكل
         </Link>
-        <div className="flex-1 h-px bg-gray-200" />
+        <div className="flex-1 h-px bg-[#1F6F8B]/15" />
       </div>
     </div>
   );
@@ -157,19 +193,19 @@ export default function ProductGrid() {
       {[1, 2, 3].map((g) => (
         <div key={g} className="mb-10">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 h-px bg-gray-200" />
-            <div className="h-6 w-32 bg-gray-200 animate-pulse rounded" />
-            <div className="flex-1 h-px bg-gray-200" />
+            <div className="flex-1 h-px bg-[#1F6F8B]/15" />
+            <div className="h-6 w-32 bg-[#1F6F8B]/10 animate-pulse rounded" />
+            <div className="flex-1 h-px bg-[#1F6F8B]/15" />
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
-                <div className="w-full aspect-square bg-gray-200 animate-pulse" />
+              <div key={i} className="bg-white/60 backdrop-blur-sm rounded-xl shadow-md border border-white/60 overflow-hidden">
+                <div className="w-full aspect-square bg-[#E6F2F8]/50 animate-pulse" />
                 <div className="p-3 space-y-2">
-                  <div className="h-4 bg-gray-200 animate-pulse rounded w-3/4" />
-                  <div className="h-4 bg-gray-200 animate-pulse rounded w-1/2" />
+                  <div className="h-4 bg-[#E6F2F8]/60 animate-pulse rounded w-3/4" />
+                  <div className="h-4 bg-[#E6F2F8]/60 animate-pulse rounded w-1/2" />
                 </div>
-                <div className="border-t border-gray-100 h-12 bg-gray-50 animate-pulse" />
+                <div className="border-t border-white/40 h-12 bg-[#E6F2F8]/30 animate-pulse" />
               </div>
             ))}
           </div>
@@ -180,11 +216,11 @@ export default function ProductGrid() {
   if (!products.length) return <p className="text-center text-gray-400 py-10">لا توجد منتجات حالياً</p>;
 
   return (
-    <section className="w-full bg-white py-6 sm:py-8 overflow-hidden">
+    <section className="w-full py-6 sm:py-8 overflow-hidden">
     <div className="max-w-6xl mx-auto px-3 sm:px-4">
       {orderedCategories.map((category, catIdx) => (
         <div key={category}>
-          <div className="-mx-3 sm:-mx-4 mb-4 sm:mb-6 border-t border-gray-100 pt-4 sm:pt-6">
+          <div className="-mx-3 sm:-mx-4 mb-4 sm:mb-6 border-t border-[#1F6F8B]/10 pt-4 sm:pt-6">
             <CategoryBanner category={category} images={bannerMap[category]} />
           </div>
           <CategoryRow category={category} items={grouped[category]} isFirst={catIdx === 0} />
