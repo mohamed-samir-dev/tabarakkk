@@ -82,23 +82,16 @@ function colorOrder(color: string, isOrangeFirst: boolean): number {
 
 function CategoryRow({ category, items, isFirst }: { category: string; items: Product[]; isFirst?: boolean }) {
   const isOrangeFirst = orangeFirstCategories.includes(category);
-  // build stable color order: first occurrence order, but orange first if applicable
-  const colorRank = new Map<string, number>();
-  const sorted = [...items].sort((a, b) => {
-    const sa = parseStorage(a.storage), sb = parseStorage(b.storage);
-    if (sa !== sb) return sa - sb;
-    const ca = colorOrder(a.color || "", isOrangeFirst);
-    const cb = colorOrder(b.color || "", isOrangeFirst);
-    if (ca !== cb) return ca - cb;
-    return (a.color || "").localeCompare(b.color || "");
+  // build color rank: orange first (for specific categories), then alphabetical
+  const colors = [...new Set(items.map((p) => p.color || ""))];
+  colors.sort((a, b) => {
+    const ao = colorOrder(a, isOrangeFirst), bo = colorOrder(b, isOrangeFirst);
+    if (ao !== bo) return ao - bo;
+    return a.localeCompare(b);
   });
-  // assign rank per color based on sorted order
-  let rank = 0;
-  for (const p of sorted) {
-    const c = p.color || "";
-    if (!colorRank.has(c)) colorRank.set(c, rank++);
-  }
-  const visible = sorted.sort((a, b) => {
+  const colorRank = new Map(colors.map((c, i) => [c, i]));
+  // sort: storage ascending → color rank
+  const visible = [...items].sort((a, b) => {
     const sa = parseStorage(a.storage), sb = parseStorage(b.storage);
     if (sa !== sb) return sa - sb;
     return (colorRank.get(a.color || "") ?? 99) - (colorRank.get(b.color || "") ?? 99);

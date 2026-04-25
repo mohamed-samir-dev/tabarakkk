@@ -1,33 +1,26 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { notFound } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import ProductCard from "../../components/products/ProductCard";
-import type { Product } from "../../components/products/types";
-import { slugConfigs } from "../../lib/categoryConfig";
+import ProductCard from "../products/ProductCard";
+import type { Product } from "../products/types";
 import { IoChevronBack, IoChevronForward, IoHomeOutline } from "react-icons/io5";
 import { HiOutlineSparkles } from "react-icons/hi2";
 import { BsGrid3X3GapFill } from "react-icons/bs";
 
-function filterProducts(products: Product[], slug: string): Product[] {
-  const config = slugConfigs[slug];
-  if (!config) return products;
-  const { brand, category, nameIncludes } = config.filters;
-  return products.filter((p) => {
-    const matchBrand = brand ? p.brand?.toLowerCase() === brand.toLowerCase() : true;
-    const matchCategory = category ? p.category?.trim().toLowerCase() === category.trim().toLowerCase() : false;
-    const matchName = nameIncludes?.length
-      ? nameIncludes.some((kw) => p.name?.toLowerCase().includes(kw.toLowerCase()))
-      : false;
-    if (nameIncludes?.length && category) return (matchBrand && matchName) || matchCategory;
-    if (nameIncludes?.length) return matchBrand && matchName;
-    if (category) return matchCategory;
-    return matchBrand;
-  });
+const ITEMS_PER_PAGE = 12;
+
+interface Props {
+  title: string;
+  parentLabel?: string;
+  parentHref?: string;
+  products: Product[];
+  loading: boolean;
+  emptyIcon?: string;
 }
 
+/* ── floating orbs in hero ── */
 function FloatingOrbs() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -35,6 +28,7 @@ function FloatingOrbs() {
         { w: 320, h: 320, top: "-15%", right: "-8%", bg: "radial-gradient(circle, rgba(124,192,67,0.15) 0%, transparent 70%)", dur: 18 },
         { w: 240, h: 240, bottom: "-10%", left: "-5%", bg: "radial-gradient(circle, rgba(31,111,139,0.2) 0%, transparent 70%)", dur: 22 },
         { w: 160, h: 160, top: "20%", left: "30%", bg: "radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%)", dur: 15 },
+        { w: 100, h: 100, top: "60%", right: "20%", bg: "radial-gradient(circle, rgba(124,192,67,0.1) 0%, transparent 70%)", dur: 20 },
       ].map((orb, i) => (
         <motion.div
           key={i}
@@ -48,70 +42,84 @@ function FloatingOrbs() {
   );
 }
 
-export default function CategoryPageClient({ slug }: { slug: string }) {
-  const config = slugConfigs[slug];
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+/* ── shimmer skeleton ── */
+function SkeletonGrid() {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: i * 0.06, duration: 0.4 }}
+          className="cat-skeleton-card rounded-2xl overflow-hidden"
+        >
+          <div className="aspect-square cat-shimmer" />
+          <div className="p-3.5 space-y-3">
+            <div className="h-3.5 rounded-full w-[80%] cat-shimmer" />
+            <div className="h-3 rounded-full w-[55%] cat-shimmer" />
+            <div className="h-9 rounded-xl cat-shimmer mt-2" />
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+/* ── empty state ── */
+function EmptyState({ icon }: { icon: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5, type: "spring" }}
+      className="flex flex-col items-center justify-center py-20 sm:py-32 gap-5 text-center"
+    >
+      <motion.div
+        className="cat-empty-icon"
+        animate={{ y: [0, -10, 0] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <span className="text-5xl">{icon}</span>
+      </motion.div>
+      <div>
+        <p className="text-gray-700 text-lg sm:text-xl font-extrabold mb-1.5">المنتجات ستُضاف قريباً</p>
+        <p className="text-gray-400 text-sm max-w-xs mx-auto leading-relaxed">هذا القسم قيد التحضير، تابعنا للمزيد من المنتجات المميزة</p>
+      </div>
+      <Link href="/" className="cat-back-btn">
+        <IoHomeOutline size={16} />
+        العودة للرئيسية
+      </Link>
+    </motion.div>
+  );
+}
+
+/* ── main layout ── */
+export default function CategoryLayout({ title, parentLabel, parentHref = "/", products, loading, emptyIcon = "📦" }: Props) {
   const [page, setPage] = useState(1);
   const gridRef = useRef<HTMLDivElement>(null);
+  const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
   const [mounted, setMounted] = useState(false);
-  const ITEMS_PER_PAGE = 12;
 
   useEffect(() => { setMounted(true); }, []);
-
-  useEffect(() => {
-    if (!config) return;
-    const brand = config.filters.brand ?? "";
-    const query = brand ? `?brand=${encodeURIComponent(brand)}` : "";
-    fetch(`/api/products${query}`)
-      .then((r) => r.json())
-      .then((data: Product[]) => {
-        const filtered = filterProducts(data, slug);
-        const parseStorage = (s?: string) => {
-          if (!s) return 0;
-          const n = parseFloat(s);
-          if (s.includes("تيرا") || s.toLowerCase().includes("tb")) return n * 1024;
-          return n || 0;
-        };
-        const colorOrder = (c?: string) => {
-          if (!c) return 99;
-          if (c.includes("برتقال") || c.toLowerCase().includes("orange")) return 0;
-          if (c.includes("سيلفر") || c.toLowerCase().includes("silver")) return 1;
-          if (c.includes("ازرق") || c.includes("أزرق") || c.toLowerCase().includes("blue")) return 2;
-          return 3;
-        };
-        const sorted = [...filtered].sort((a, b) => {
-          const storageDiff = parseStorage(a.storage) - parseStorage(b.storage);
-          if (storageDiff !== 0) return storageDiff;
-          return colorOrder(a.color) - colorOrder(b.color);
-        });
-        setProducts(sorted);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [slug, config]);
-
-  if (!config) return notFound();
-
-  const label = config.label ?? slug;
-  const parentLabel = config.parentLabel ?? "";
-  const parentHref = config.parentHref ?? "/";
-  const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
-  const currentProducts = products.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   const goToPage = (n: number) => {
     setPage(n);
     gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const currentProducts = products.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+
   return (
     <main className="min-h-screen cat-page-bg" dir="rtl">
       {/* ═══ HERO ═══ */}
       <div className="cat-hero relative overflow-hidden">
         <FloatingOrbs />
+        {/* mesh noise overlay */}
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")" }} />
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+          {/* breadcrumb */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -122,12 +130,19 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
               <IoHomeOutline size={13} />
               الرئيسية
             </Link>
-            <IoChevronBack size={11} className="text-white/30" />
-            <Link href={parentHref} className="cat-breadcrumb-pill">{parentLabel}</Link>
-            <IoChevronBack size={11} className="text-white/30" />
-            <span className="cat-breadcrumb-pill cat-breadcrumb-active">{label}</span>
+            {parentLabel && (
+              <>
+                <IoChevronBack size={11} className="text-white/30" />
+                {parentHref ? (
+                  <Link href={parentHref} className="cat-breadcrumb-pill">{parentLabel}</Link>
+                ) : (
+                  <span className="cat-breadcrumb-pill">{parentLabel}</span>
+                )}
+              </>
+            )}
           </motion.div>
 
+          {/* title block */}
           <motion.div
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
@@ -143,7 +158,7 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
                 <HiOutlineSparkles className="text-[#7CC043] text-xl sm:text-2xl" />
               </motion.div>
               <div className="flex-1 min-w-0">
-                <h1 className="text-2xl sm:text-4xl font-black text-white leading-tight tracking-tight">{label}</h1>
+                <h1 className="text-2xl sm:text-4xl font-black text-white leading-tight tracking-tight">{title}</h1>
                 <p className="text-white/50 text-xs sm:text-sm mt-1.5 font-medium">اكتشف أفضل المنتجات بأسعار لا تُقاوم</p>
               </div>
               {!loading && products.length > 0 && (
@@ -161,6 +176,7 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
           </motion.div>
         </div>
 
+        {/* wave separator */}
         <div className="absolute bottom-0 left-0 right-0">
           <svg viewBox="0 0 1440 60" fill="none" className="w-full h-auto" preserveAspectRatio="none">
             <path d="M0 60V30C180 10 360 0 540 10C720 20 900 45 1080 45C1260 45 1350 30 1440 20V60H0Z" fill="#f7fafb" />
@@ -172,49 +188,12 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
       {/* ═══ CONTENT ═══ */}
       <div ref={gridRef} className="max-w-6xl mx-auto px-3 sm:px-6 py-5 sm:py-10 scroll-mt-4">
         {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.06, duration: 0.4 }}
-                className="cat-skeleton-card rounded-2xl overflow-hidden"
-              >
-                <div className="aspect-square cat-shimmer" />
-                <div className="p-3.5 space-y-3">
-                  <div className="h-3.5 rounded-full w-[80%] cat-shimmer" />
-                  <div className="h-3 rounded-full w-[55%] cat-shimmer" />
-                  <div className="h-9 rounded-xl cat-shimmer mt-2" />
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <SkeletonGrid />
         ) : !products.length ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, type: "spring" }}
-            className="flex flex-col items-center justify-center py-20 sm:py-32 gap-5 text-center"
-          >
-            <motion.div
-              className="cat-empty-icon"
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <span className="text-5xl">📦</span>
-            </motion.div>
-            <div>
-              <p className="text-gray-700 text-lg sm:text-xl font-extrabold mb-1.5">المنتجات ستُضاف قريباً</p>
-              <p className="text-gray-400 text-sm max-w-xs mx-auto leading-relaxed">هذا القسم قيد التحضير، تابعنا للمزيد من المنتجات المميزة</p>
-            </div>
-            <Link href="/" className="cat-back-btn">
-              <IoHomeOutline size={16} />
-              العودة للرئيسية
-            </Link>
-          </motion.div>
+          <EmptyState icon={emptyIcon} />
         ) : (
           <>
+            {/* toolbar */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -235,6 +214,7 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
               )}
             </motion.div>
 
+            {/* products grid */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={page}
@@ -263,6 +243,7 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
               </motion.div>
             </AnimatePresence>
 
+            {/* pagination */}
             {totalPages > 1 && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -277,6 +258,7 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
                 >
                   <IoChevronForward size={18} />
                 </button>
+
                 <div className="flex items-center gap-1.5">
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
                     <button
@@ -286,7 +268,7 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
                     >
                       {page === n && (
                         <motion.div
-                          layoutId="activePageSlug"
+                          layoutId="activePage"
                           className="absolute inset-0 cat-pg-active-bg rounded-xl"
                           transition={{ type: "spring", stiffness: 300, damping: 25 }}
                         />
@@ -295,6 +277,7 @@ export default function CategoryPageClient({ slug }: { slug: string }) {
                     </button>
                   ))}
                 </div>
+
                 <button
                   onClick={() => goToPage(Math.min(totalPages, page + 1))}
                   disabled={page === totalPages}
