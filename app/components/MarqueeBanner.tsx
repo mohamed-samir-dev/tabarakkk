@@ -10,7 +10,7 @@ const items = [
 ];
 
 export default function MarqueeBanner() {
-  const repeated = [...items, ...items];
+  const repeated = [...items, ...items, ...items, ...items];
 
   return (
     <div className="marquee-banner overflow-hidden whitespace-nowrap">
