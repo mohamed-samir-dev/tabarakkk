@@ -2,7 +2,7 @@ import { Banner } from "./components/banner";
 import { ProductGrid } from "./components/products";
 import CustomerReviews from "./components/CustomerReviews";
 import ShopByCategory from "./components/ShopByCategory";
-import MarqueeBanner from "./components/MarqueeBanner";
+// import MarqueeBanner from "./components/MarqueeBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -83,7 +83,7 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd) }}
       />
       <main className="min-h-screen home-gradient">
-        <MarqueeBanner />
+        {/* <MarqueeBanner /> */}
         <Banner />
         <ShopByCategory />
         <ProductGrid />

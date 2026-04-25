@@ -1,28 +1,35 @@
-"use client";
+// "use client";
 
-const items = [
-  { icon: "🚚", text: "شحن مجاني لجميع المناطق" },
-  { icon: "💳", text: "تقسيط مريح بدون فوائد" },
-  { icon: "🛡️", text: "ضمان شامل على جميع المنتجات" },
-  { icon: "⚡", text: "أحدث الأجهزة بأفضل الأسعار" },
-  { icon: "🎁", text: "عروض حصرية يومياً" },
-  { icon: "✅", text: "منتجات أصلية 100%" },
-];
+// const items = [
+//   { icon: "🚚", text: "شحن مجاني لجميع المناطق" },
+//   { icon: "💳", text: "تقسيط مريح بدون فوائد" },
+//   { icon: "🛡️", text: "ضمان شامل على جميع المنتجات" },
+//   { icon: "⚡", text: "أحدث الأجهزة بأفضل الأسعار" },
+//   { icon: "🎁", text: "عروض حصرية يومياً" },
+//   { icon: "✅", text: "منتجات أصلية 100%" },
+// ];
 
-export default function MarqueeBanner() {
-  const repeated = [...items, ...items, ...items, ...items];
+// function TrackContent() {
+//   return (
+//     <>
+//       {items.map((item, i) => (
+//         <span key={i} className="marquee-item">
+//           <span className="marquee-icon">{item.icon}</span>
+//           {item.text}
+//           <span className="marquee-dot">✦</span>
+//         </span>
+//       ))}
+//     </>
+//   );
+// }
 
-  return (
-    <div className="marquee-banner overflow-hidden whitespace-nowrap">
-      <div className="marquee-track inline-flex">
-        {repeated.map((item, i) => (
-          <span key={i} className="marquee-item">
-            <span className="marquee-icon">{item.icon}</span>
-            {item.text}
-            <span className="marquee-dot">✦</span>
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
+// export default function MarqueeBanner() {
+//   return (
+//     <div className="marquee-banner overflow-hidden whitespace-nowrap">
+//       <div className="marquee-track inline-flex">
+//         <TrackContent />
+//         <TrackContent />
+//       </div>
+//     </div>
+//   );
+// }
