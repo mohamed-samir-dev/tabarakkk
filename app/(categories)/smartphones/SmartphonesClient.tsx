@@ -14,6 +14,7 @@ export default function SmartphonesClient() {
       .then((data: Product[]) => {
         const filtered = data.filter((p) =>
           p.category?.includes("ايفون") ||
+          p.category?.includes("آيفون") ||
           p.category?.includes("جالكسي") ||
           p.category?.includes("جالاكسي") ||
           p.category?.toLowerCase().includes("iphone") ||
