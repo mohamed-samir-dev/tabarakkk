@@ -69,7 +69,7 @@ function parseStorage(s?: string): number {
   if (!s) return 999;
   const n = parseFloat(s);
   if (isNaN(n)) return 999;
-  if (/tb/i.test(s)) return n * 1024;
+  if (/tb|تيرا/i.test(s)) return n * 1024;
   return n;
 }
 
