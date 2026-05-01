@@ -11,6 +11,7 @@ export default function NewProductPage() {
   const [category, setCategory] = useState("");
   const [inStock, setInStock] = useState(true);
   const [description, setDescription] = useState("");
+  const [overviewImage, setOverviewImage] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState("");
   const [saving, setSaving] = useState(false);
@@ -43,6 +44,7 @@ export default function NewProductPage() {
       fd.append("category", category);
       fd.append("inStock", String(inStock));
       fd.append("description", description);
+      fd.append("overviewImage", overviewImage);
       if (imageFile) fd.append("image", imageFile);
 
       const res = await fetch("/api/admin/products", {
@@ -168,6 +170,25 @@ export default function NewProductPage() {
           rows={4}
           className={inputCls + " resize-none"}
         />
+      </div>
+
+      {/* Overview Image */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">صورة النظرة العامة (رابط)</label>
+        <input
+          type="text"
+          value={overviewImage}
+          onChange={(e) => setOverviewImage(e.target.value)}
+          placeholder="https://res.cloudinary.com/..."
+          className={inputCls}
+          dir="ltr"
+        />
+        <p className="text-xs text-gray-400 mt-1">الصورة اللي تظهر في سكشن النظرة العامة بصفحة المنتج</p>
+        {overviewImage && (
+          <div className="mt-2 relative w-full h-40 rounded-xl border border-gray-200 bg-gray-50 overflow-hidden">
+            <img src={overviewImage} alt="صورة النظرة العامة" className="w-full h-full object-contain" />
+          </div>
+        )}
       </div>
 
       {/* Actions */}

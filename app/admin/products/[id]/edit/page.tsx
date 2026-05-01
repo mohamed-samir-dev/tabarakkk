@@ -15,6 +15,7 @@ export default function EditProductPage() {
   const [currentImage, setCurrentImage] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState("");
+  const [overviewImage, setOverviewImage] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [categories, setCategories] = useState<string[]>([]);
@@ -38,6 +39,7 @@ export default function EditProductPage() {
         setInStock(p.inStock ?? true);
         setDescription(p.description || "");
         setCurrentImage(p.image || "");
+        setOverviewImage(p.overviewImage || "");
       })
       .catch(() => toast.error("فشل تحميل المنتج"))
       .finally(() => setLoading(false));
@@ -62,6 +64,7 @@ export default function EditProductPage() {
       fd.append("category", category);
       fd.append("inStock", String(inStock));
       fd.append("description", description);
+      fd.append("overviewImage", overviewImage);
       if (imageFile) fd.append("image", imageFile);
 
       const res = await fetch(`/api/admin/products/${id}`, {
@@ -200,6 +203,25 @@ export default function EditProductPage() {
           rows={4}
           className={inputCls + " resize-none"}
         />
+      </div>
+
+      {/* Overview Image */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">صورة النظرة العامة (رابط)</label>
+        <input
+          type="text"
+          value={overviewImage}
+          onChange={(e) => setOverviewImage(e.target.value)}
+          placeholder="https://res.cloudinary.com/..."
+          className={inputCls}
+          dir="ltr"
+        />
+        <p className="text-xs text-gray-400 mt-1">الصورة اللي تظهر في سكشن النظرة العامة بصفحة المنتج</p>
+        {overviewImage && (
+          <div className="mt-2 relative w-full h-40 rounded-xl border border-gray-200 bg-gray-50 overflow-hidden">
+            <img src={overviewImage} alt="صورة النظرة العامة" className="w-full h-full object-contain" />
+          </div>
+        )}
       </div>
 
       {/* Actions */}

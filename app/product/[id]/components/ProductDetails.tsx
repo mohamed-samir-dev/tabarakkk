@@ -1,162 +1,257 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { IoCheckmarkCircle } from "react-icons/io5";
-import { motion, AnimatePresence } from "framer-motion";
 import type { Product } from "../../../components/products/types";
 
 const fmt = (n: number) => n.toLocaleString("ar-SA");
 
-const specLabels: [keyof NonNullable<Product["specs"]>, string, string][] = [
-  ["screen", "الشاشة", "📱"], ["processor", "المعالج", "⚡"], ["ram", "الرام", "🧠"], ["storage", "التخزين", "💾"],
-  ["rearCamera", "الكاميرا الخلفية", "📸"], ["frontCamera", "الكاميرا الأمامية", "🤳"],
-  ["battery", "البطارية", "🔋"], ["batteryLife", "عمر البطارية", "⏱️"], ["charging", "الشحن", "🔌"],
-  ["os", "نظام التشغيل", "💻"], ["extras", "مميزات إضافية", "✨"],
+const specLabelMap: Record<string, string> = {
+  modelName: "اسم الموديل",
+  modelNumber: "رقم الموديل",
+  condition: "الحالة",
+  colorName: "اللون",
+  edition: "الإصدار",
+  os: "نظام التشغيل",
+  processorNumber: "المعالج",
+  processorName: "الشركة المصنعة",
+  coreCount: "عدد الأنوية",
+  ram: "ذاكرة الرام",
+  internalStorage: "سعة التخزين",
+  memoryType: "نوع الذاكرة",
+  screenSize: "حجم الشاشة",
+  mainCamera: "الكاميرا الرئيسية",
+  mainCameraFeature: "نوع الكاميرا",
+  secondaryCameraResolution: "الكاميرا الأمامية",
+  flash: "الفلاش",
+  batterySize: "حجم البطارية",
+  fastCharging: "الشحن السريع",
+  chargingType: "نوع الشحن",
+  networkType: "نوع الشبكة",
+  simCount: "عدد الشرائح",
+  simType: "نوع الشريحة",
+  audioJack: "منفذ الصوت",
+  voiceDialing: "الاتصال الصوتي",
+};
+
+const oldSpecLabels: [keyof NonNullable<Product["specs"]>, string][] = [
+  ["screen", "الشاشة"], ["processor", "المعالج"], ["ram", "الرام"], ["storage", "التخزين"],
+  ["rearCamera", "الكاميرا الخلفية"], ["frontCamera", "الكاميرا الأمامية"],
+  ["battery", "البطارية"], ["batteryLife", "عمر البطارية"], ["charging", "الشحن"],
+  ["os", "نظام التشغيل"], ["extras", "مميزات إضافية"],
 ];
 
-interface ProductDetailsProps {
+interface Props {
+  overview?: string;
+  detailedSpecs?: Record<string, string>;
   installment?: Product["installment"];
   description?: string;
   specs?: Product["specs"];
+  image?: string;
+  productName?: string;
 }
 
-type Tab = "specs" | "description" | "installment";
+type TabKey = "overview" | "specs";
 
-export default function ProductDetails({ installment, description, specs }: ProductDetailsProps) {
-  const hasSpecs = specs && Object.values(specs).some(Boolean);
-  const hasInstallment = installment?.available;
+export default function ProductDetails({ overview, detailedSpecs, installment, description, specs, image, productName }: Props) {
+  const hasOverview = !!(overview && overview.length > 10);
+  const hasDesc = !!(description && description.length > 5);
+  const hasDetailedSpecs = !!(detailedSpecs && Object.keys(detailedSpecs).length > 0);
+  const hasOldSpecs = !!(specs && Object.values(specs).some(Boolean));
+  const hasInstallment = !!installment?.available;
 
-  const tabs: { id: Tab; label: string }[] = [
-    ...(hasSpecs ? [{ id: "specs" as Tab, label: "المواصفات" }] : []),
-    ...(description ? [{ id: "description" as Tab, label: "الوصف" }] : []),
-    ...(hasInstallment ? [{ id: "installment" as Tab, label: "التقسيط" }] : []),
-  ];
+  const overviewText = hasOverview ? overview! : hasDesc ? description! : "";
 
-  const [active, setActive] = useState<Tab>(tabs[0]?.id ?? "specs");
+  const specEntries = hasDetailedSpecs ? Object.entries(detailedSpecs!).filter(([, v]) => !!v) : [];
+  const oldSpecEntries = hasOldSpecs ? oldSpecLabels.filter(([key]) => !!specs![key]) : [];
 
-  if (!tabs.length) return null;
+  const hasSpecs = specEntries.length > 0 || oldSpecEntries.length > 0;
+
+  // Build available tabs
+  const tabs: { key: TabKey; label: string }[] = [];
+  if (overviewText) tabs.push({ key: "overview", label: "نظرة عامة" });
+
+  if (hasSpecs) tabs.push({ key: "specs", label: "المواصفات التقنية" });
+
+  const [activeTab, setActiveTab] = useState<TabKey>(tabs[0]?.key || "overview");
+
+  const hasAnything = overviewText || hasSpecs || hasInstallment;
+  if (!hasAnything) return null;
 
   return (
-    <div className="mt-6 sm:mt-10 bg-white rounded-2xl sm:rounded-3xl product-card-shadow overflow-hidden">
-      {/* Tab bar */}
-      <div className="flex border-b border-gray-100 px-2 sm:px-4 overflow-x-auto scrollbar-hide">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActive(tab.id)}
-            className={`relative px-4 sm:px-6 py-3.5 sm:py-4 text-xs sm:text-sm font-bold whitespace-nowrap transition-colors ${
-              active === tab.id ? "text-[#0F4C6E]" : "text-gray-400 hover:text-gray-600"
-            }`}
-          >
-            {tab.label}
-            {active === tab.id && (
-              <motion.div
-                layoutId="tab-underline"
-                className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#0F4C6E] to-[#1F6F8B] rounded-full"
-                transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              />
-            )}
-          </button>
-        ))}
-      </div>
+    <div className="mt-8 sm:mt-12 md:mt-20 px-1 sm:px-0">
 
-      {/* Tab content */}
-      <div className="p-4 sm:p-6">
-        <AnimatePresence mode="wait">
-          {active === "specs" && hasSpecs && (
-            <motion.div
-              key="specs"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-1"
-            >
-              {specLabels.map(([key, label, emoji]) =>
-                specs[key] ? (
-                  <div
-                    key={key}
-                    className="flex items-center text-xs sm:text-sm px-3 sm:px-4 py-3 rounded-xl even:bg-[#f8fbfd] odd:bg-white"
-                  >
-                    <span className="ml-2 text-sm">{emoji}</span>
-                    <span className="text-gray-400 w-28 sm:w-36 shrink-0 font-medium">{label}</span>
-                    <span className="text-gray-800 flex-1 min-w-0 break-words font-semibold">{specs[key]}</span>
+      {/* ── TAB NAVIGATION ── */}
+      {tabs.length > 1 && (
+        <div className="border-b border-gray-200 mb-8 overflow-x-auto scrollbar-hide">
+          <div className="flex gap-4 sm:gap-8 md:gap-12 min-w-max">
+            {tabs.map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => setActiveTab(key)}
+                className={`pb-4 text-sm sm:text-base font-semibold transition-all cursor-pointer border-b-2 ${
+                  activeTab === key
+                    ? "border-[#0F4C6E] text-[#0F4C6E]"
+                    : "border-transparent text-gray-400 hover:text-gray-700"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── OVERVIEW TAB ── */}
+      {activeTab === "overview" && overviewText && (
+        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden min-h-[320px] sm:min-h-[400px] md:min-h-[450px]">
+          {/* Background Image */}
+          {image && (
+            <Image
+              src={image}
+              alt={productName || "صورة المنتج"}
+              fill
+              className="object-cover object-center"
+              priority
+            />
+          )}
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20" />
+          {/* Content */}
+          <div className="relative z-10 flex flex-col justify-end h-full min-h-[320px] sm:min-h-[400px] md:min-h-[450px] p-5 sm:p-8 md:p-12">
+            <h2 className="text-xl sm:text-2xl md:text-[32px] font-bold text-white leading-[1.3] mb-2 sm:mb-3">
+              نظرة عامة
+            </h2>
+            <p className="text-[13px] sm:text-[15px] md:text-lg leading-[1.8] sm:leading-[1.9] text-white/80 max-w-2xl">
+              {overviewText}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* ── REQUIREMENTS SECTION (always visible below overview) ── */}
+      {activeTab === "overview" && overviewText && (
+        <div className="mt-6 sm:mt-10 md:mt-14">
+          <div className="pd-apple-card p-4 sm:p-8 md:p-12">
+            <div className="text-center mb-5 sm:mb-8 md:mb-10">
+              <h2 className="text-lg sm:text-2xl md:text-[32px] font-semibold text-gray-900 leading-[1.3]">
+                الشروط الواجب توفرها للتقديم
+              </h2>
+              <p className="text-gray-400 text-xs sm:text-sm md:text-base mt-1.5 sm:mt-2">تعرّف على أبرز المميزات</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-5">
+              {[
+                { num: 1, text: "مواطن سعودي او مقيم بإقامة سارية." },
+                { num: 2, text: "اتمام سداد الدفعة المقدمة لتأكيد الطلب." },
+                { num: 3, text: "تقديم بيانات صحيحة للتواصل والمتابعة." },
+                { num: 4, text: "توقيع عقد الأقساط عند استلام الجهاز." },
+                { num: 5, text: "الالتزام بسداد القسط الشهري في موعده." },
+              ].map(({ num, text }) => (
+                <div
+                  key={num}
+                  className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 md:p-5 rounded-xl sm:rounded-2xl bg-[#F5F5F7] border border-gray-100"
+                >
+                  <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-[#0F4C6E] text-white flex items-center justify-center text-xs sm:text-sm font-bold shrink-0">
+                    {num}
                   </div>
-                ) : null
-              )}
-            </motion.div>
-          )}
-
-          {active === "description" && description && (
-            <motion.div
-              key="desc"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-            >
-              {/* Description cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {description.split("\n").filter(Boolean).map((paragraph, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.06, duration: 0.3 }}
-                    className="group relative rounded-2xl p-4 bg-gradient-to-br from-[#f8fbfd] to-white border border-[#e8f1f6] hover:border-[#0F4C6E]/20 hover:shadow-md hover:shadow-[#0F4C6E]/5 transition-all duration-300"
-                  >
-                    {/* Accent bar */}
-                    <div className="absolute top-4 right-0 w-[3px] h-6 rounded-l-full bg-gradient-to-b from-[#0F4C6E] to-[#7CC043] group-hover:h-8 transition-all duration-300" />
-                    <div className="flex items-start gap-3 pr-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#0F4C6E]/8 to-[#7CC043]/8 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform duration-300">
-                        <span className="text-xs">{["📌", "💡", "🔍", "⭐", "📋", "🎯", "✅", "📦", "🏷️", "💎"][i % 10]}</span>
-                      </div>
-                      <p className="text-[13px] sm:text-sm text-gray-600 leading-relaxed group-hover:text-gray-800 transition-colors duration-300">{paragraph}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {active === "installment" && hasInstallment && (
-            <motion.div
-              key="installment"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-4"
-            >
-              <div className="bg-gradient-to-r from-[#eaf5d8] to-[#f0f9e8] rounded-2xl p-4 sm:p-5">
-                <p className="text-sm sm:text-base font-bold text-[#5a9030]">
-                  احصل عليه بأقساط شهرية
-                  {installment.downPayment ? ` تبدأ بدفعة ${fmt(installment.downPayment)} ر.س والباقي أقساط` : ""}
-                </p>
-                {installment.note && <p className="text-xs text-[#7CC043] mt-1.5">{installment.note}</p>}
-              </div>
-              {installment.policy && (
-                <div className="text-center py-2">
-                  <span className="text-sm font-bold text-amber-600 bg-amber-50 px-4 py-2 rounded-full">♕ {installment.policy} ♕</span>
+                  <p className="text-xs sm:text-sm md:text-[15px] text-gray-700 leading-relaxed pt-1 sm:pt-1.5">{text}</p>
                 </div>
-              )}
-              {installment.conditions && installment.conditions.length > 0 && (
-                <div>
-                  <p className="text-sm font-bold text-gray-700 mb-3">الشروط الواجب توفرها للتقديم</p>
-                  <div className="flex flex-col gap-2.5">
-                    {installment.conditions.map((c, i) => (
-                      <div key={i} className="flex items-start gap-2.5 text-sm text-gray-600">
-                        <IoCheckmarkCircle size={16} className="text-[#7CC043] shrink-0 mt-0.5" />
-                        <span>{c}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      {/* ── SPECS TAB ── */}
+      {activeTab === "specs" && hasSpecs && (
+        <div className="pd-apple-card p-4 sm:p-8 md:p-12">
+          <h2 className="text-xl sm:text-2xl md:text-[32px] font-semibold text-gray-900 leading-[1.3] mb-5 sm:mb-8">
+            المواصفات التقنية
+          </h2>
+          {specEntries.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 sm:gap-x-10 md:gap-x-12">
+              {(() => {
+                const mid = Math.ceil(specEntries.length / 2);
+                return [specEntries.slice(0, mid), specEntries.slice(mid)].map((col, colIdx) => (
+                  <div key={colIdx} className="space-y-0">
+                    {col.map(([key, value]) => (
+                      <div key={key} className="flex justify-between py-2.5 sm:py-3.5 border-b border-gray-100 gap-3">
+                        <span className="text-gray-400 text-xs sm:text-sm md:text-[15px] shrink-0">{specLabelMap[key] || key}</span>
+                        <span className="font-semibold text-gray-900 text-xs sm:text-sm md:text-[15px] text-left">{value}</span>
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
-            </motion.div>
+                ));
+              })()}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 sm:gap-x-10 md:gap-x-12">
+              {(() => {
+                const mid = Math.ceil(oldSpecEntries.length / 2);
+                return [oldSpecEntries.slice(0, mid), oldSpecEntries.slice(mid)].map((col, colIdx) => (
+                  <div key={colIdx} className="space-y-0">
+                    {col.map(([key, label]) => (
+                      <div key={key} className="flex justify-between py-2.5 sm:py-3.5 border-b border-gray-100 gap-3">
+                        <span className="text-gray-400 text-xs sm:text-sm md:text-[15px] shrink-0">{label}</span>
+                        <span className="font-semibold text-gray-900 text-xs sm:text-sm md:text-[15px] text-left">{specs![key]}</span>
+                      </div>
+                    ))}
+                  </div>
+                ));
+              })()}
+            </div>
           )}
-        </AnimatePresence>
-      </div>
+        </div>
+      )}
+
+      {/* ── INSTALLMENT (always visible below tabs) ── */}
+      {hasInstallment && (
+        <div className="mt-6 sm:mt-10 md:mt-14 space-y-3 sm:space-y-4">
+          <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#0a2a3f] via-[#0F4C6E] to-[#1a5c3a]" />
+            <div className="absolute inset-0">
+              <div className="absolute top-0 right-0 w-40 sm:w-64 h-40 sm:h-64 bg-[#7CC043]/15 rounded-full blur-[60px] sm:blur-[80px]" />
+              <div className="absolute bottom-0 left-0 w-32 sm:w-48 h-32 sm:h-48 bg-white/5 rounded-full blur-[40px] sm:blur-[60px]" />
+            </div>
+            <div className="relative p-5 sm:p-8 md:p-12 text-center">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-5 rounded-2xl sm:rounded-3xl bg-white/10 backdrop-blur-sm border border-white/10 flex items-center justify-center">
+                <span className="text-2xl sm:text-3xl">💳</span>
+              </div>
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-1.5 sm:mb-2">احصل عليه بالتقسيط المريح</h3>
+              {installment!.downPayment && (
+                <p className="text-sm sm:text-base text-white/60">
+                  ادفع مقدم <span className="text-white font-bold">{fmt(installment!.downPayment)} ر.س</span> والباقي أقساط شهرية
+                </p>
+              )}
+              {installment!.note && <p className="text-[10px] sm:text-xs text-white/40 mt-2 sm:mt-3">{installment!.note}</p>}
+            </div>
+          </div>
+
+          {installment!.policy && (
+            <div className="text-center">
+              <span className="inline-block text-sm font-semibold text-[#0F4C6E] bg-[#0F4C6E]/5 border border-[#0F4C6E]/10 px-6 py-3 rounded-full">
+                {installment!.policy}
+              </span>
+            </div>
+          )}
+
+          {installment!.conditions && installment!.conditions.length > 0 && (
+            <div className="pd-apple-card p-4 sm:p-6 md:p-8">
+              <h4 className="text-sm sm:text-base font-bold text-gray-900 mb-3 sm:mb-5">الشروط المطلوبة للتقديم</h4>
+              <div className="space-y-3">
+                {installment!.conditions.map((c, i) => (
+                  <div key={i} className="flex items-start gap-3 text-sm text-gray-600">
+                    <IoCheckmarkCircle size={18} className="text-[#7CC043] shrink-0 mt-0.5" />
+                    <span className="leading-relaxed">{c}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

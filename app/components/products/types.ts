@@ -12,6 +12,17 @@ export interface Product {
   storage?: string;
   network?: string;
   screenSize?: string;
+  overview?: string;
+  overviewImage?: string;
+  features?: {
+    screenAndDesign?: string[];
+    performance?: string[];
+    battery?: string[];
+    frontCamera?: string[];
+    rearCamera?: string[];
+    videoAndPhotography?: string[];
+  };
+  detailedSpecs?: Record<string, string>;
   specs?: {
     screen?: string;
     processor?: string;

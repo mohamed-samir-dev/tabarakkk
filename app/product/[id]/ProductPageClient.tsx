@@ -93,13 +93,13 @@ export default function ProductPageClient({ id, initialProduct }: { id: string; 
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#0F4C6E]/15 to-transparent" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 pt-4 sm:pt-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-8">
-          {/* Images - takes 7 cols on large */}
+      <div className="max-w-7xl mx-auto px-2.5 sm:px-4 md:px-6 pt-3 sm:pt-6 md:pt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-5 md:gap-8">
+          {/* Images */}
           <div className="lg:col-span-7">
             <ProductImages images={allImages} name={product.name} discountPercent={product.discountPercent} />
           </div>
-          {/* Info - takes 5 cols on large */}
+          {/* Info */}
           <div className="lg:col-span-5">
             <ProductInfo
               product={product}
@@ -108,7 +108,16 @@ export default function ProductPageClient({ id, initialProduct }: { id: string; 
             />
           </div>
         </div>
-        <ProductDetails installment={product.installment} description={product.description} specs={product.specs} />
+        <ProductDetails
+          overview={product.overview}
+          features={product.features}
+          detailedSpecs={product.detailedSpecs}
+          installment={product.installment}
+          description={product.description}
+          specs={product.specs}
+          image={product.overviewImage}
+          productName={product.name}
+        />
       </div>
     </main>
   );
