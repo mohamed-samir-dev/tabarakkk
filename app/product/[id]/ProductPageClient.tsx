@@ -110,7 +110,6 @@ export default function ProductPageClient({ id, initialProduct }: { id: string; 
         </div>
         <ProductDetails
           overview={product.overview}
-          features={product.features}
           detailedSpecs={product.detailedSpecs}
           installment={product.installment}
           description={product.description}

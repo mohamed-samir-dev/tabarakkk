@@ -477,3 +477,17 @@ body.checkout-page {
   60% { transform: translateX(-3px); }
   80% { transform: translateX(3px); }
 }
+
+/* ── Product Details Card ── */
+.pd-apple-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid rgba(15,76,110,0.06);
+  box-shadow: 0 1px 3px rgba(15,76,110,0.04), 0 4px 16px rgba(15,76,110,0.03);
+}
+@media (min-width: 640px) {
+  .pd-apple-card { border-radius: 20px; }
+}
+@media (min-width: 768px) {
+  .pd-apple-card { border-radius: 24px; }
+}
