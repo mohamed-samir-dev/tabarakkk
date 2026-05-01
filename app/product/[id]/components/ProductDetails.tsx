@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, type MouseEvent as ReactMouseEvent } from "react";
 import Image from "next/image";
 import { IoCheckmarkCircle } from "react-icons/io5";
+import { HiOutlineIdentification, HiOutlineCreditCard, HiOutlineClipboardDocumentCheck, HiOutlinePencilSquare, HiOutlineCalendarDays } from "react-icons/hi2";
 import type { Product } from "../../../components/products/types";
 
 const fmt = (n: number) => n.toLocaleString("ar-SA");
@@ -53,6 +54,106 @@ interface Props {
 }
 
 type TabKey = "overview" | "specs";
+
+/* ── 3D Tilt Card ── */
+function TiltCard({ children, className }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [style, setStyle] = useState({ transform: "perspective(800px) rotateX(0deg) rotateY(0deg)", transition: "transform 0.15s ease" });
+
+  const handleMove = (e: ReactMouseEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    if (!el) return;
+    const { left, top, width, height } = el.getBoundingClientRect();
+    const x = (e.clientX - left) / width - 0.5;
+    const y = (e.clientY - top) / height - 0.5;
+    setStyle({ transform: `perspective(800px) rotateY(${x * 12}deg) rotateX(${-y * 12}deg) scale3d(1.02,1.02,1.02)`, transition: "transform 0.15s ease" });
+  };
+
+  const handleLeave = () => {
+    setStyle({ transform: "perspective(800px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)", transition: "transform 0.5s ease" });
+  };
+
+  return (
+    <div ref={ref} onMouseMove={handleMove} onMouseLeave={handleLeave} style={style} className={className}>
+      {children}
+    </div>
+  );
+}
+
+/* ── Requirement Card ── */
+function ReqCard({ item }: { item: { text: string; icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>; color: string; num: string } }) {
+  return (
+    <TiltCard className="cursor-default h-full">
+      <div className="group relative h-full bg-white rounded-2xl sm:rounded-[22px] overflow-hidden product-card-shadow">
+        {/* Mobile: horizontal row | Desktop: vertical card */}
+        <div className="flex items-center gap-3.5 p-3.5 sm:flex-col sm:items-center sm:text-center sm:gap-0 sm:p-5 sm:pt-6">
+          {/* Icon */}
+          <div
+            className="w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 sm:mb-3.5 transition-transform duration-300 group-hover:scale-105"
+            style={{ backgroundColor: `${item.color}0c` }}
+          >
+            <item.icon className="w-5 h-5 sm:w-7 sm:h-7" style={{ color: item.color }} />
+          </div>
+
+          {/* Text + num */}
+          <div className="flex-1 min-w-0 sm:flex-none">
+            <p className="text-xs sm:text-[13px] font-semibold text-gray-800 leading-[1.6] sm:leading-[1.8]">{item.text}</p>
+          </div>
+
+          {/* Mobile: step number on the left */}
+          <span className="text-[10px] font-bold text-gray-300 sm:hidden shrink-0">{item.num}</span>
+        </div>
+
+        {/* Hover glow */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ background: `radial-gradient(circle at 50% 0%, ${item.color}08 0%, transparent 70%)` }} />
+
+        {/* Bottom accent */}
+        <div className="absolute bottom-0 left-[15%] right-[15%] h-[2px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: `linear-gradient(90deg, transparent, ${item.color}35, transparent)` }} />
+      </div>
+    </TiltCard>
+  );
+}
+
+/* ── Requirements Section ── */
+function RequirementsSection() {
+  const items = [
+    { text: "مواطن سعودي او مقيم بإقامة سارية", icon: HiOutlineIdentification, color: "#0F4C6E", num: "01" },
+    { text: "سداد الدفعة المقدمة لتأكيد الطلب", icon: HiOutlineCreditCard, color: "#7CC043", num: "02" },
+    { text: "تقديم بيانات صحيحة للتواصل والمتابعة", icon: HiOutlineClipboardDocumentCheck, color: "#1F6F8B", num: "03" },
+    { text: "توقيع عقد الأقساط عند الاستلام", icon: HiOutlinePencilSquare, color: "#0F4C6E", num: "04" },
+    { text: "الالتزام بسداد القسط الشهري في موعده", icon: HiOutlineCalendarDays, color: "#7CC043", num: "05" },
+  ];
+
+  return (
+    <div className="mt-6 sm:mt-10 md:mt-14">
+      {/* Header */}
+      <div className="text-center mb-5 sm:mb-8">
+        <span className="inline-block text-[10px] sm:text-xs font-bold text-[#0F4C6E] bg-[#0F4C6E]/5 px-4 py-1.5 rounded-full mb-3 tracking-wide">
+          شروط التقسيط
+        </span>
+        <h2 className="text-lg sm:text-2xl md:text-[28px] font-bold text-gray-900">
+          الشروط الواجب توفرها للتقديم
+        </h2>
+      </div>
+
+      {/* Mobile: stacked list | Desktop: 2 rows (3 + 2 centered) */}
+      <div className="flex flex-col gap-2.5 sm:hidden">
+        {items.map((item, i) => <ReqCard key={i} item={item} />)}
+      </div>
+
+      <div className="hidden sm:block space-y-4">
+        {/* Row 1 */}
+        <div className="grid grid-cols-3 gap-4">
+          {items.slice(0, 3).map((item, i) => <ReqCard key={i} item={item} />)}
+        </div>
+        {/* Row 2 centered */}
+        <div className="grid grid-cols-2 gap-4 max-w-[66.666%] mx-auto">
+          {items.slice(3).map((item, i) => <ReqCard key={i} item={item} />)}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function ProductDetails({ overview, detailedSpecs, installment, description, specs, image, productName }: Props) {
   const hasOverview = !!(overview && overview.length > 10);
@@ -131,38 +232,8 @@ export default function ProductDetails({ overview, detailedSpecs, installment, d
         </div>
       )}
 
-      {/* ── REQUIREMENTS SECTION (always visible below overview) ── */}
-      {activeTab === "overview" && overviewText && (
-        <div className="mt-6 sm:mt-10 md:mt-14">
-          <div className="pd-apple-card p-4 sm:p-8 md:p-12">
-            <div className="text-center mb-5 sm:mb-8 md:mb-10">
-              <h2 className="text-lg sm:text-2xl md:text-[32px] font-semibold text-gray-900 leading-[1.3]">
-                الشروط الواجب توفرها للتقديم
-              </h2>
-              <p className="text-gray-400 text-xs sm:text-sm md:text-base mt-1.5 sm:mt-2">تعرّف على أبرز المميزات</p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-5">
-              {[
-                { num: 1, text: "مواطن سعودي او مقيم بإقامة سارية." },
-                { num: 2, text: "اتمام سداد الدفعة المقدمة لتأكيد الطلب." },
-                { num: 3, text: "تقديم بيانات صحيحة للتواصل والمتابعة." },
-                { num: 4, text: "توقيع عقد الأقساط عند استلام الجهاز." },
-                { num: 5, text: "الالتزام بسداد القسط الشهري في موعده." },
-              ].map(({ num, text }) => (
-                <div
-                  key={num}
-                  className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 md:p-5 rounded-xl sm:rounded-2xl bg-[#F5F5F7] border border-gray-100"
-                >
-                  <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-[#0F4C6E] text-white flex items-center justify-center text-xs sm:text-sm font-bold shrink-0">
-                    {num}
-                  </div>
-                  <p className="text-xs sm:text-sm md:text-[15px] text-gray-700 leading-relaxed pt-1 sm:pt-1.5">{text}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── REQUIREMENTS SECTION ── */}
+      {activeTab === "overview" && overviewText && <RequirementsSection />}
 
 
       {/* ── SPECS TAB ── */}
