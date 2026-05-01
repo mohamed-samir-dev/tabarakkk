@@ -10,15 +10,18 @@ import { IoChevronBack, IoChevronForward, IoHomeOutline } from "react-icons/io5"
 import { HiOutlineSparkles } from "react-icons/hi2";
 import { BsGrid3X3GapFill } from "react-icons/bs";
 
+const normalizeAr = (s: string) =>
+  s.trim().toLowerCase().replace(/[أإآٱ]/g, "ا").replace(/[ؤ]/g, "و").replace(/[ئ]/g, "ي").replace(/ة/g, "ه").replace(/\s+/g, " ");
+
 function filterProducts(products: Product[], slug: string): Product[] {
   const config = slugConfigs[slug];
   if (!config) return products;
   const { brand, category, nameIncludes } = config.filters;
   return products.filter((p) => {
     const matchBrand = brand ? p.brand?.toLowerCase() === brand.toLowerCase() : true;
-    const matchCategory = category ? p.category?.trim().toLowerCase() === category.trim().toLowerCase() : false;
+    const matchCategory = category ? normalizeAr(p.category ?? "") === normalizeAr(category) : false;
     const matchName = nameIncludes?.length
-      ? nameIncludes.some((kw) => p.name?.toLowerCase().includes(kw.toLowerCase()))
+      ? nameIncludes.some((kw) => normalizeAr(p.name ?? "").includes(normalizeAr(kw)))
       : false;
     if (nameIncludes?.length && category) return (matchBrand && matchName) || matchCategory;
     if (nameIncludes?.length) return matchBrand && matchName;

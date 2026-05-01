@@ -80,13 +80,10 @@ function colorOrder(color: string, isOrangeFirst: boolean): number {
   return 0;
 }
 
-function CategoryRow({ category, items, subCategory, isFirst }: { category: string; items: Product[]; subCategory?: string; isFirst?: boolean }) {
+function CategoryRow({ category, items, isFirst }: { category: string; items: Product[]; isFirst?: boolean }) {
   const isOrangeFirst = orangeFirstCategories.includes(category);
-  // filter by subCategory if provided from home settings
-  const filtered = subCategory ? items.filter((p) => p.subCategory === subCategory) : items;
-  const source = filtered.length > 0 ? filtered : items;
   // build color rank: orange first (for specific categories), then alphabetical
-  const colors = [...new Set(source.map((p) => p.color || ""))];
+  const colors = [...new Set(items.map((p) => p.color || ""))];
   colors.sort((a, b) => {
     const ao = colorOrder(a, isOrangeFirst), bo = colorOrder(b, isOrangeFirst);
     if (ao !== bo) return ao - bo;
@@ -94,7 +91,7 @@ function CategoryRow({ category, items, subCategory, isFirst }: { category: stri
   });
   const colorRank = new Map(colors.map((c, i) => [c, i]));
   // sort: storage ascending → color rank
-  const visible = [...source].sort((a, b) => {
+  const visible = [...items].sort((a, b) => {
     const sa = parseStorage(a.storage), sb = parseStorage(b.storage);
     if (sa !== sb) return sa - sb;
     return (colorRank.get(a.color || "") ?? 99) - (colorRank.get(b.color || "") ?? 99);
@@ -166,17 +163,6 @@ export default function ProductGrid() {
     return map;
   }, [products]);
 
-  // Build a map from category → subCategory from home settings
-  const subCategoryMap = useMemo(() => {
-    const map: Record<string, string> = {};
-    if (!homeConfig) return map;
-    homeConfig.settings
-      .filter((s) => s.showInHome && s.subCategory)
-      .sort((a, b) => a.order - b.order)
-      .forEach((s) => { if (!map[s.category]) map[s.category] = s.subCategory; });
-    return map;
-  }, [homeConfig]);
-
   // If no settings configured yet, show all. Otherwise filter & sort by settings.
   const orderedCategories = useMemo(() => {
     const allCats = Object.keys(grouped).filter((c) => c !== "أخرى");
@@ -230,7 +216,7 @@ export default function ProductGrid() {
           <div className="-mx-3 sm:-mx-4 mb-4 sm:mb-6 border-t border-[#1F6F8B]/10 pt-4 sm:pt-6">
             <CategoryBanner category={category} images={bannerMap[category]} />
           </div>
-          <CategoryRow category={category} items={grouped[category]} subCategory={subCategoryMap[category]} isFirst={catIdx === 0} />
+          <CategoryRow category={category} items={grouped[category]} isFirst={catIdx === 0} />
         </div>
       ))}
     </div>
