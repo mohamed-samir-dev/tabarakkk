@@ -88,32 +88,32 @@ export default function ProductInfo({ product, addedToCart, onAddToCart }: Produ
         <div className="absolute top-0 left-0 w-32 h-32 bg-[#7CC043]/15 rounded-full blur-[60px]" />
         <div className="absolute bottom-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-[40px]" />
 
-        <div className="relative p-4 sm:p-6">
+        <div className="relative p-3 sm:p-6">
           {hasDiscount && (
-            <div className="flex items-center gap-2 mb-3">
-              <span className="inline-flex items-center gap-1.5 text-xs font-bold bg-red-500 text-white px-3 py-1.5 rounded-full shadow-lg shadow-red-500/30">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+              <span className="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs font-bold bg-red-500 text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-full shadow-lg shadow-red-500/30">
                 🔥 خصم {discountPercent}%
               </span>
-              <span className="text-xs text-white/50 line-through">{fmt(originalPrice)} ر.س</span>
+              <span className="text-[10px] sm:text-xs text-white/50 line-through">{fmt(originalPrice)} ر.س</span>
             </div>
           )}
 
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+          <div className="flex items-baseline gap-1.5 sm:gap-2">
+            <span className="text-2xl sm:text-4xl font-black text-white tracking-tight">
               {fmt(hasDiscount ? salePrice! : originalPrice)}
             </span>
-            <span className="text-sm sm:text-base font-bold text-white/70">ر.س</span>
+            <span className="text-xs sm:text-base font-bold text-white/70">ر.س</span>
           </div>
 
           {hasDiscount && (
-            <div className="mt-3 sm:mt-4">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[11px] sm:text-xs text-[#b8e986] font-semibold">
+            <div className="mt-2 sm:mt-4">
+              <div className="flex items-center justify-between mb-1 sm:mb-1.5">
+                <span className="text-[10px] sm:text-xs text-[#b8e986] font-semibold">
                   وفّرت {fmt(savedAmount)} ر.س
                 </span>
-                <span className="text-[10px] text-white/40">{discountPercent}% توفير</span>
+                <span className="text-[9px] sm:text-[10px] text-white/40">{discountPercent}% توفير</span>
               </div>
-              <div className="h-1.5 sm:h-2 rounded-full bg-white/10 overflow-hidden">
+              <div className="h-1 sm:h-2 rounded-full bg-white/10 overflow-hidden">
                 <motion.div
                   className="h-full rounded-full bg-gradient-to-r from-[#7CC043] to-[#b8e986]"
                   initial={{ width: 0 }}
@@ -124,14 +124,14 @@ export default function ProductInfo({ product, addedToCart, onAddToCart }: Produ
             </div>
           )}
 
-          <div className="flex items-center gap-3 mt-3">
+          <div className="flex items-center gap-2 sm:gap-3 mt-2 sm:mt-3">
             {taxIncluded && (
-              <span className="text-[10px] sm:text-[11px] text-white/40 bg-white/5 px-2.5 py-1 rounded-full border border-white/10">
+              <span className="text-[9px] sm:text-[11px] text-white/40 bg-white/5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border border-white/10">
                 شامل الضريبة
               </span>
             )}
             {installment?.available && (
-              <span className="text-[10px] sm:text-[11px] text-[#b8e986] bg-[#7CC043]/10 px-2.5 py-1 rounded-full border border-[#7CC043]/20">
+              <span className="text-[9px] sm:text-[11px] text-[#b8e986] bg-[#7CC043]/10 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border border-[#7CC043]/20">
                 💳 تقسيط متاح
               </span>
             )}
