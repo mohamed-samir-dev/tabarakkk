@@ -70,6 +70,7 @@ export default function ProductCard({ product, priority = false }: { product: Pr
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 priority={priority}
                 loading={priority ? "eager" : "lazy"}
+                unoptimized
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-gray-300 text-4xl">📱</div>
