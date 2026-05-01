@@ -10,11 +10,18 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const formData = await req.formData();
-  const res = await fetch(`${getBackend()}/api/admin/products/${id}`, forwardCookies(req, {
-    method: "PUT",
-    body: formData,
-  }));
+  const contentType = req.headers.get("content-type") || "";
+  const body = await req.arrayBuffer();
+  const res = await fetch(`${getBackend()}/api/admin/products/${id}`, {
+    ...forwardCookies(req, { method: "PUT" }),
+    body: Buffer.from(body),
+    headers: {
+      ...(forwardCookies(req, {}).headers as Record<string, string>),
+      "content-type": contentType,
+    },
+    // @ts-expect-error duplex needed for streaming body
+    duplex: "half",
+  });
   const data = await res.json();
   return NextResponse.json(data, { status: res.status });
 }

@@ -21,10 +21,12 @@ export default function EditProductPage() {
   const [imagePreview, setImagePreview] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const [imageInputKey, setImageInputKey] = useState(0);
 
   // Gallery
   const [galleryItems, setGalleryItems] = useState<{ type: "url" | "file"; value: string; file?: File }[]>([]);
   const galleryInputRef = useRef<HTMLInputElement>(null);
+  const [galleryInputKey, setGalleryInputKey] = useState(0);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -41,23 +43,21 @@ export default function EditProductPage() {
     fetch(`/api/admin/products/${id}`, { credentials: "include" })
       .then((r) => r.json())
       .then((p) => {
-        setName(p.name || "");
+        setName(p.name ?? "");
         setOriginalPrice(p.originalPrice != null ? String(p.originalPrice) : "");
         setSalePrice(p.salePrice != null ? String(p.salePrice) : "");
-        setCategory(p.category || "");
+        setCategory(p.category ?? "");
         setInStock(p.inStock ?? true);
-        setDescription(p.description || "");
-        setCurrentImage(p.image || "");
-        setOverviewImage(p.overviewImage || "");
+        setDescription(p.description ?? "");
+        setCurrentImage(p.image ?? "");
+        setOverviewImage(p.overviewImage ?? "");
 
         // Detect if current image is a URL (not uploaded) - default to upload mode with preview
-        if (p.image) {
-          setImageUrl(p.image);
-        }
+        setImageUrl(p.image ?? "");
 
         // Load existing gallery images as URL items
         if (p.images?.length) {
-          setGalleryItems(p.images.map((url: string) => ({ type: "url" as const, value: url || "" })));
+          setGalleryItems(p.images.map((url: string) => ({ type: "url" as const, value: url ?? "" })));
         }
       })
       .catch(() => toast.error("فشل تحميل المنتج"))
@@ -69,7 +69,7 @@ export default function EditProductPage() {
     if (!file) return;
     setImageFile(file);
     setImagePreview(URL.createObjectURL(file));
-    e.target.value = "";
+    setImageInputKey((k) => k + 1);
   }
 
   function addGalleryUrl() {
@@ -85,7 +85,7 @@ export default function EditProductPage() {
       file: f,
     }));
     setGalleryItems((prev) => [...prev, ...newItems]);
-    e.target.value = "";
+    setGalleryInputKey((k) => k + 1);
   }
 
   function removeGalleryItem(index: number) {
@@ -165,7 +165,7 @@ export default function EditProductPage() {
 
         {imageMode === "upload" ? (
           <>
-            <input ref={imageInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleImageChange} />
+            <input key={imageInputKey} ref={imageInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleImageChange} />
             {(imagePreview || currentImage) ? (
               <div onClick={() => imageInputRef.current?.click()} className="relative w-full h-48 rounded-xl border border-gray-200 bg-gray-50 overflow-hidden cursor-pointer group">
                 <img src={imagePreview || currentImage} alt="صورة المنتج" className="w-full h-full object-contain" />
@@ -186,7 +186,7 @@ export default function EditProductPage() {
           </>
         ) : (
           <>
-            <input type="text" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://..." className={inputCls} dir="ltr" />
+            <input type="text" value={imageUrl ?? ""} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://..." className={inputCls} dir="ltr" />
             {imageUrl && (
               <div className="mt-2 w-full h-48 rounded-xl border border-gray-200 bg-gray-50 overflow-hidden">
                 <img src={imageUrl} alt="صورة المنتج" className="w-full h-full object-contain" />
@@ -203,7 +203,7 @@ export default function EditProductPage() {
           {galleryItems.map((item, i) => (
             <div key={i} className="flex items-center gap-2">
               {item.type === "url" ? (
-                <input type="text" value={item.value || ""} onChange={(e) => updateGalleryUrl(i, e.target.value)} placeholder="https://..." className={inputCls + " flex-1"} dir="ltr" />
+                <input type="text" value={item.value ?? ""} onChange={(e) => updateGalleryUrl(i, e.target.value)} placeholder="https://..." className={inputCls + " flex-1"} dir="ltr" />
               ) : (
                 <div className="flex-1 flex items-center gap-2 border border-gray-300 rounded-xl px-3 py-2">
                   <img src={item.value} alt="" className="w-10 h-10 object-cover rounded" />
@@ -220,7 +220,7 @@ export default function EditProductPage() {
           <button type="button" onClick={addGalleryUrl} className="px-3 py-1.5 text-xs border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50">
             + رابط صورة
           </button>
-          <input ref={galleryInputRef} type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden" onChange={handleGalleryFiles} />
+          <input key={galleryInputKey} ref={galleryInputRef} type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden" onChange={handleGalleryFiles} />
           <button type="button" onClick={() => galleryInputRef.current?.click()} className="px-3 py-1.5 text-xs border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50">
             + رفع صور
           </button>
@@ -239,7 +239,7 @@ export default function EditProductPage() {
         <label className="block text-sm font-medium text-gray-700 mb-1">
           اسم المنتج <span className="text-red-500">*</span>
         </label>
-        <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="مثال: iPhone 15 Pro Max" className={inputCls} required />
+        <input type="text" value={name ?? ""} onChange={(e) => setName(e.target.value)} placeholder="مثال: iPhone 15 Pro Max" className={inputCls} required />
       </div>
 
       {/* Original Price */}
@@ -247,14 +247,14 @@ export default function EditProductPage() {
         <label className="block text-sm font-medium text-gray-700 mb-1">
           السعر قبل الخصم (ر.س) <span className="text-red-500">*</span>
         </label>
-        <input type="number" value={originalPrice} onChange={(e) => setOriginalPrice(e.target.value)} placeholder="0" min="0" step="0.01" className={inputCls} required />
+        <input type="number" value={originalPrice ?? ""} onChange={(e) => setOriginalPrice(e.target.value)} placeholder="0" min="0" step="0.01" className={inputCls} required />
         <p className="text-xs text-gray-400 mt-1">هذا هو السعر المشطوب عليه</p>
       </div>
 
       {/* Sale Price */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">سعر البيع (ر.س)</label>
-        <input type="number" value={salePrice} onChange={(e) => setSalePrice(e.target.value)} placeholder="اتركه فارغاً إن لم يكن هناك خصم" min="0" step="0.01" className={inputCls} />
+        <input type="number" value={salePrice ?? ""} onChange={(e) => setSalePrice(e.target.value)} placeholder="اتركه فارغاً إن لم يكن هناك خصم" min="0" step="0.01" className={inputCls} />
         <p className="text-xs text-red-400 mt-1">هذا هو السعر المعروض بالأحمر</p>
       </div>
 
@@ -282,13 +282,13 @@ export default function EditProductPage() {
       {/* Description */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">الوصف</label>
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="وصف المنتج..." rows={4} className={inputCls + " resize-none"} />
+        <textarea value={description ?? ""} onChange={(e) => setDescription(e.target.value)} placeholder="وصف المنتج..." rows={4} className={inputCls + " resize-none"} />
       </div>
 
       {/* Overview Image */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">صورة النظرة العامة (رابط)</label>
-        <input type="text" value={overviewImage} onChange={(e) => setOverviewImage(e.target.value)} placeholder="https://res.cloudinary.com/..." className={inputCls} dir="ltr" />
+        <input type="text" value={overviewImage ?? ""} onChange={(e) => setOverviewImage(e.target.value)} placeholder="https://res.cloudinary.com/..." className={inputCls} dir="ltr" />
         <p className="text-xs text-gray-400 mt-1">الصورة اللي تظهر في سكشن النظرة العامة بصفحة المنتج</p>
         {overviewImage && (
           <div className="mt-2 relative w-full h-40 rounded-xl border border-gray-200 bg-gray-50 overflow-hidden">

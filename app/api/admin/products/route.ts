@@ -8,11 +8,18 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const formData = await req.formData();
-  const res = await fetch(`${getBackend()}/api/admin/products`, forwardCookies(req, {
-    method: "POST",
-    body: formData,
-  }));
+  const contentType = req.headers.get("content-type") || "";
+  const body = await req.arrayBuffer();
+  const res = await fetch(`${getBackend()}/api/admin/products`, {
+    ...forwardCookies(req, { method: "POST" }),
+    body: Buffer.from(body),
+    headers: {
+      ...(forwardCookies(req, {}).headers as Record<string, string>),
+      "content-type": contentType,
+    },
+    // @ts-expect-error duplex needed for streaming body
+    duplex: "half",
+  });
   const data = await res.json();
   return NextResponse.json(data, { status: res.status });
 }

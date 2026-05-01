@@ -57,8 +57,7 @@ export default function BannerSlider({ images }: { images: string[] }) {
           style={{ boxShadow: "0 4px 24px rgba(15,76,110,0.12)" }}
         >
           <div
-            className="relative w-full"
-            style={{ aspectRatio: "2.2/1" }}
+            className="relative w-full aspect-[1.9/1] sm:aspect-[2.2/1]"
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
           >
@@ -77,7 +76,7 @@ export default function BannerSlider({ images }: { images: string[] }) {
                   src={images[current]}
                   alt={`banner ${current + 1}`}
                   fill
-                  className="object-cover"
+                  className="object-contain sm:object-cover"
                   priority={current === 0}
                   unoptimized
                   sizes="100vw"
