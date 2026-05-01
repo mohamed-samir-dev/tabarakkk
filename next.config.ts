@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
       { hostname: "i.ibb.co" },
       { protocol: "https", hostname: "tabarak-tech.com" },
       { protocol: "https", hostname: "res.cloudinary.com", pathname: "/**" },
+      { protocol: "https", hostname: "backend-tabarak-production.up.railway.app" },
     ],
   },
 };
