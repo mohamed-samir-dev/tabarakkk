@@ -114,6 +114,7 @@ export default function ProductDetails({ overview, detailedSpecs, installment, d
               fill
               className="object-cover object-center"
               priority
+              unoptimized
             />
           )}
           {/* Gradient Overlay */}

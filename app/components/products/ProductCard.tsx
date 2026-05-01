@@ -13,8 +13,10 @@ import { useCartStore } from "../../store/cartStore";
 const fmt = (n: number) => n.toLocaleString("en-US");
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-const resolveImg = (src: string) =>
-  src.startsWith("http") ? src : `${API}${src.startsWith("/") ? src : "/" + src}`;
+const resolveImg = (src: string) => {
+  const clean = src.replace(/&amp;/g, "&");
+  return clean.startsWith("http") ? clean : `${API}${clean.startsWith("/") ? clean : "/" + clean}`;
+};
 
 export default function ProductCard({ product, priority = false }: { product: Product; priority?: boolean }) {
   const { name, salePrice, discountPercent = 0, freeDelivery, warrantyYears, inStock } = product;
