@@ -66,8 +66,7 @@ function CategoryBannerSlider({ images }: { images: string[] }) {
         />
 
         <div
-          className="relative w-full"
-          style={{ aspectRatio: "2.2/1" }}
+          className="relative w-full aspect-[1.9/1] sm:aspect-[2.2/1]"
           onTouchStart={(e) => { touchStart.current = e.touches[0].clientX; }}
           onTouchEnd={(e) => {
             const diff = touchStart.current - e.changedTouches[0].clientX;
