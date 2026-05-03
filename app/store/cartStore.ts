@@ -70,10 +70,11 @@ export const useCartStore = create<CartState>()(
       recordOrder: () =>
         set((s) => {
           const newCount = s.rateLimit.count + 1;
-          if (newCount > 3) {
-            return { rateLimit: { count: newCount, blockedUntil: Date.now() + 5 * 60 * 1000 } };
+          const limit = s.rateLimit.blockedUntil ? 2 : 3;
+          if (newCount >= limit) {
+            return { rateLimit: { count: 0, blockedUntil: Date.now() + 5 * 60 * 1000 } };
           }
-          return { rateLimit: { count: newCount, blockedUntil: null } };
+          return { rateLimit: { ...s.rateLimit, count: newCount } };
         }),
       getRateLimitStatus: () => {
         const { blockedUntil } = get().rateLimit;
