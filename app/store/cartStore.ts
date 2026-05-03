@@ -71,8 +71,7 @@ export const useCartStore = create<CartState>()(
         set((s) => {
           const newCount = s.rateLimit.count + 1;
           if (newCount > 3) {
-            const penalty = (newCount - 3) * 5 * 60 * 1000;
-            return { rateLimit: { count: newCount, blockedUntil: Date.now() + penalty } };
+            return { rateLimit: { count: newCount, blockedUntil: Date.now() + 5 * 60 * 1000 } };
           }
           return { rateLimit: { count: newCount, blockedUntil: null } };
         }),

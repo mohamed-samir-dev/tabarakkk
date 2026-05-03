@@ -44,6 +44,10 @@ export default function CheckoutPage() {
         downPayment,
       }),
     });
+    if (res.status === 429) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "عذراً، تم تقديم عدة طلبات متتالية. يرجى الانتظار قليلاً قبل المحاولة مرة أخرى");
+    }
     const data = res.ok ? await res.json().catch(() => ({})) : {};
     if (data.orderId) localStorage.setItem("orderId", data.orderId);
     if (data.dbId) localStorage.setItem("dbOrderId", data.dbId);

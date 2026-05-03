@@ -36,7 +36,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
     const interval = setInterval(() => {
       const { blocked, remainingMs } = getRateLimitStatus();
       if (blocked) {
-        setRateLimitMsg("لقد تجاوزت الحد المسموح من الطلبات. يرجى الانتظار");
+        setRateLimitMsg("عذراً، تم تقديم عدة طلبات متتالية. يرجى الانتظار قليلاً قبل المحاولة مرة أخرى 🙏");
         setCountdown(formatTime(remainingMs));
       } else {
         setRateLimitMsg(null);
@@ -74,7 +74,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
   const handleNext = async () => {
     const { blocked, remainingMs } = getRateLimitStatus();
     if (blocked) {
-      setRateLimitMsg("لقد تجاوزت الحد المسموح من الطلبات. يرجى الانتظار");
+      setRateLimitMsg("عذراً، تم تقديم عدة طلبات متتالية. يرجى الانتظار قليلاً قبل المحاولة مرة أخرى 🙏");
       setCountdown(formatTime(remainingMs));
       return;
     }
@@ -101,6 +101,13 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
       recordOrder();
       await onSubmit(fields);
       router.push("/checkout/verify");
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message.includes("429")) {
+        setRateLimitMsg("عذراً، تم تقديم عدة طلبات متتالية. يرجى الانتظار قليلاً قبل المحاولة مرة أخرى 🙏");
+      } else {
+        setRateLimitMsg("عذراً، حدث خطأ أثناء معالجة طلبك. يرجى المحاولة مرة أخرى بعد قليل 🙏");
+      }
+      setCountdown("15:00");
     } finally { setLoading(false); }
   };
 
@@ -278,12 +285,15 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3"
+            className="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center space-y-2"
           >
-            <IoTimeOutline size={20} className="text-red-500 shrink-0" />
-            <div>
-              <p className="text-sm font-bold text-red-600">{rateLimitMsg}</p>
-              <p className="text-lg font-extrabold text-red-700 mt-1">{countdown}</p>
+            <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto">
+              <IoTimeOutline size={24} className="text-amber-600" />
+            </div>
+            <p className="text-sm font-bold text-amber-800">{rateLimitMsg}</p>
+            <div className="bg-white rounded-xl py-2 px-4 inline-block border border-amber-100">
+              <p className="text-xs text-amber-500 font-medium">يمكنك المحاولة بعد</p>
+              <p className="text-2xl font-extrabold text-amber-700 mt-0.5">{countdown}</p>
             </div>
           </motion.div>
         )}
