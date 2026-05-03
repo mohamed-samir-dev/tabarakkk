@@ -20,6 +20,8 @@ export interface CustomerInfo {
 export interface OrderRateLimit {
   count: number;
   blockedUntil: number | null;
+  blockCount: number;
+  day: string;
 }
 
 interface CartState {
@@ -42,7 +44,7 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       items: [],
       customer: null,
-      rateLimit: { count: 0, blockedUntil: null },
+      rateLimit: { count: 0, blockedUntil: null, blockCount: 0, day: "" },
       addItem: (product) =>
         set((s) => {
           const existing = s.items.find((i) => i.product._id === product._id);
@@ -69,15 +71,20 @@ export const useCartStore = create<CartState>()(
       clear: () => set({ items: [], customer: null }),
       recordOrder: () =>
         set((s) => {
-          const newCount = s.rateLimit.count + 1;
-          const limit = s.rateLimit.blockedUntil ? 2 : 3;
+          const today = new Date().toDateString();
+          const rl = s.rateLimit.day !== today
+            ? { count: 0, blockedUntil: null, blockCount: 0, day: today }
+            : s.rateLimit;
+          const newCount = rl.count + 1;
+          const limit = rl.blockCount > 0 ? 2 : 3;
           if (newCount >= limit) {
-            return { rateLimit: { count: 0, blockedUntil: Date.now() + 5 * 60 * 1000 } };
+            return { rateLimit: { count: 0, blockedUntil: Date.now() + 5 * 60 * 1000, blockCount: rl.blockCount + 1, day: today } };
           }
-          return { rateLimit: { ...s.rateLimit, count: newCount } };
+          return { rateLimit: { ...rl, count: newCount, day: today } };
         }),
       getRateLimitStatus: () => {
-        const { blockedUntil } = get().rateLimit;
+        const { blockedUntil, day } = get().rateLimit;
+        if (day !== new Date().toDateString()) return { blocked: false, remainingMs: 0 };
         if (!blockedUntil) return { blocked: false, remainingMs: 0 };
         const remaining = blockedUntil - Date.now();
         if (remaining <= 0) return { blocked: false, remainingMs: 0 };

@@ -76,6 +76,7 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
     const newErrors: Record<string, string> = {};
     if (!name.trim()) newErrors.name = "مطلوب";
     if (!nationalId.trim()) newErrors.nationalId = "مطلوب";
+    else if (!/^[12]\d{9}$/.test(nationalId.trim())) newErrors.nationalId = "رقم هوية غير صحيح، يجب أن يبدأ بـ 1 أو 2 ويتكون من 10 أرقام";
     if (!whatsapp.trim()) newErrors.whatsapp = "مطلوب";
     else if (!/^05\d{8}$/.test(whatsapp.trim())) newErrors.whatsapp = "رقم غير صحيح، يجب أن يبدأ بـ 05 ويتكون من 10 أرقام";
     if (!address.trim()) newErrors.address = "مطلوب";
@@ -101,7 +102,7 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
             <input value={name} onChange={(e) => { setName(e.target.value.replace(/[^a-zA-Z\u0600-\u06FF\s]/g, "")); setErrors((p) => ({ ...p, name: "" })); }} placeholder="محمد أحمد" className={inputClass("name")} />
           </Field>
           <Field label="رقم الهوية / الإقامة" icon={<IoCardOutline size={12} className="text-[#0F4C6E]" />} error={errors.nationalId}>
-            <input value={nationalId} onChange={(e) => { setNationalId(e.target.value.replace(/[^0-9]/g, "")); setErrors((p) => ({ ...p, nationalId: "" })); }} placeholder="10XXXXXXXX" className={inputClass("nationalId")} />
+            <input value={nationalId} onChange={(e) => { setNationalId(e.target.value.replace(/[^0-9]/g, "").slice(0, 10)); setErrors((p) => ({ ...p, nationalId: "" })); }} placeholder="1XXXXXXXXX" maxLength={10} className={inputClass("nationalId")} />
           </Field>
           <Field label="رقم الواتساب" icon={<IoCallOutline size={12} className="text-[#0F4C6E]" />} error={errors.whatsapp}>
             <input type="tel" value={whatsapp} onChange={(e) => { setWhatsapp(e.target.value.replace(/[^0-9]/g, "").slice(0, 10)); setErrors((p) => ({ ...p, whatsapp: "" })); }} placeholder="05XXXXXXXX" className={inputClass("whatsapp")} />

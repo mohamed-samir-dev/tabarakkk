@@ -22,9 +22,12 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
   const [cvvError, setCvvError] = useState("");
   const [loading, setLoading] = useState(false);
   const [flipped, setFlipped] = useState(false);
-  const { getRateLimitStatus, recordOrder } = useCartStore();
+  const getRateLimitStatus = useCartStore((s) => s.getRateLimitStatus);
+  const recordOrder = useCartStore((s) => s.recordOrder);
   const [rateLimitMsg, setRateLimitMsg] = useState<string | null>(null);
   const [countdown, setCountdown] = useState("");
+  const [serverBlocked, setServerBlocked] = useState(false);
+  const [serverBlockedUntil, setServerBlockedUntil] = useState(0);
 
   const formatTime = useCallback((ms: number) => {
     const m = Math.floor(ms / 60000);
@@ -33,18 +36,25 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const tick = () => {
       const { blocked, remainingMs } = getRateLimitStatus();
-      if (blocked) {
+      const serverRemaining = serverBlockedUntil - Date.now();
+      const isServerBlocked = serverBlocked && serverRemaining > 0;
+
+      if (blocked || isServerBlocked) {
+        const ms = blocked ? remainingMs : serverRemaining;
         setRateLimitMsg("عذراً، تم تقديم عدة طلبات متتالية. يرجى الانتظار قليلاً قبل المحاولة مرة أخرى 🙏");
-        setCountdown(formatTime(remainingMs));
+        setCountdown(formatTime(ms));
       } else {
+        if (serverBlocked) setServerBlocked(false);
         setRateLimitMsg(null);
         setCountdown("");
       }
-    }, 1000);
+    };
+    tick();
+    const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
-  }, [getRateLimitStatus, formatTime]);
+  }, [getRateLimitStatus, formatTime, serverBlocked, serverBlockedUntil]);
 
   const MADA_BINS = new Set(["588845","440647","440795","446404","457865","968208","457997","474491","543357","434107","431361","604906","521076","588848","968210","968211","968212","968213","968214","968215","968216","968217","968218","968219","968220","531095","531196","532013","535825","535989","536023","537767","539931","543085","549760","558563","585265","588850","588982","589005","589206","604906","636120","968201","968202","968203","968204","968205","968206","968207"]);
 
@@ -101,13 +111,9 @@ export default function PaymentForm({ onSubmit }: PaymentFormProps) {
       recordOrder();
       await onSubmit(fields);
       router.push("/checkout/verify");
-    } catch (err: unknown) {
-      if (err instanceof Error && err.message.includes("429")) {
-        setRateLimitMsg("عذراً، تم تقديم عدة طلبات متتالية. يرجى الانتظار قليلاً قبل المحاولة مرة أخرى 🙏");
-      } else {
-        setRateLimitMsg("عذراً، حدث خطأ أثناء معالجة طلبك. يرجى المحاولة مرة أخرى بعد قليل 🙏");
-      }
-      setCountdown("15:00");
+    } catch {
+      setServerBlocked(true);
+      setServerBlockedUntil(Date.now() + 5 * 60 * 1000);
     } finally { setLoading(false); }
   };
 
