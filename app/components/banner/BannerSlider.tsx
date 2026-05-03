@@ -76,7 +76,7 @@ export default function BannerSlider({ images }: { images: string[] }) {
                   src={images[current]}
                   alt={`banner ${current + 1}`}
                   fill
-                  className="object-contain sm:object-cover"
+                  className="object-cover"
                   priority={current === 0}
                   unoptimized
                   sizes="100vw"
