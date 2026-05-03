@@ -86,27 +86,27 @@ export default function CartPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: items.length * 0.08 + 0.1 }}
-              className="bg-gradient-to-br from-[#0F4C6E] to-[#0a3550] rounded-2xl p-4 sm:p-5 text-white shadow-[0_8px_30px_rgba(15,76,110,0.2)]"
+              className="bg-gradient-to-br from-[#0F4C6E] to-[#0a3550] rounded-xl sm:rounded-2xl p-3 sm:p-5 text-white shadow-[0_8px_30px_rgba(15,76,110,0.2)] max-w-md sm:max-w-none mx-auto sm:mx-0"
             >
-              <div className="space-y-3">
-                <div className="flex justify-between items-center text-sm">
+              <div className="space-y-2 sm:space-y-3">
+                <div className="flex justify-between items-center text-xs sm:text-sm">
                   <span className="text-white/60 font-medium">المجموع</span>
                   <span className="font-bold">{fmt(total)} ر.س</span>
                 </div>
-                <div className="flex justify-between items-center text-sm">
+                <div className="flex justify-between items-center text-xs sm:text-sm">
                   <span className="text-white/60 font-medium">التوصيل</span>
-                  <span className="text-[#7CC043] font-bold text-xs flex items-center gap-1">
+                  <span className="text-[#7CC043] font-bold text-[10px] sm:text-xs flex items-center gap-1">
                     <IoRocketOutline size={12} /> مجاني
                   </span>
                 </div>
-                <div className="border-t border-white/10 pt-3 flex justify-between items-center">
-                  <span className="font-bold text-sm">الإجمالي</span>
-                  <span className="text-xl font-extrabold">{fmt(total)} <span className="text-xs font-medium text-white/50">ر.س</span></span>
+                <div className="border-t border-white/10 pt-2 sm:pt-3 flex justify-between items-center">
+                  <span className="font-bold text-xs sm:text-sm">الإجمالي</span>
+                  <span className="text-lg sm:text-xl font-extrabold">{fmt(total)} <span className="text-[10px] sm:text-xs font-medium text-white/50">ر.س</span></span>
                 </div>
               </div>
 
               {/* Trust Badges */}
-              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-center gap-4">
+              <div className="mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-white/10 flex items-center justify-center gap-3 sm:gap-4">
                 <div className="flex items-center gap-1.5 text-white/40">
                   <IoShieldCheckmarkOutline size={14} />
                   <span className="text-[10px] font-medium">دفع آمن</span>
