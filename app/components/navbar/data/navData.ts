@@ -41,7 +41,8 @@ export const navItems: NavItem[] = [
       {
         groupLabel: "سامسونج",
         items: [
-          { label: "سامسونج S26 الترا", href: "/smartphones/samsung-s26-ultra" },
+          { label: "سامسونج S26 الترا", href: "/smartphones/samsung-galaxy-s26-ultra" },
+          { label: "سامسونج S26 بلس", href: "/smartphones/samsung-galaxy-s26-plus" },
           { label: "سامسونج S25 الترا", href: "/smartphones/samsung-s25-ultra" },
           { label: "سامسونج S24 الترا", href: "/smartphones/samsung-s24-ultra" },
           { label: "سامسونج S23 الترا", href: "/smartphones/samsung-s23-ultra" },

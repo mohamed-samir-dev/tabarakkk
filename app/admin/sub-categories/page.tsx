@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import Link from "next/link";
 import { apiFetch } from "../../lib/api";
 
 type SubCat = { name: string; category: string; count: number };
@@ -44,10 +45,11 @@ export default function SubCategoriesPage() {
   const [imageUploading, setImageUploading] = useState(false);
 
   function getSetting(cat: SubCat): Settings | undefined {
-    return settings.find((s) => s.category === cat.category && s.subCategory === cat.name);
+    const catKey = cat.category || cat.name;
+    return settings.find((s) => s.category === catKey && s.subCategory === cat.name);
   }
 
-  async function fetchData() {
+  const fetchData = async () => {
     const [res1, res2, res3, res4] = await Promise.all([
       apiFetch("/api/admin/sub-categories", { credentials: "include" }),
       apiFetch("/api/admin/sub-categories/settings", { credentials: "include" }),
@@ -60,7 +62,7 @@ export default function SubCategoriesPage() {
     setItems([...fromProducts, ...extra.filter((c) => !names.has(c.name))]);
     if (res2.ok) setSettings(await res2.json());
     if (res3.ok) { const d = await res3.json(); setMax(d?.max ?? 4); }
-  }
+  };
 
   async function handleImageUpload(file: File) {
     if (!imageUploadCat) return;
@@ -95,7 +97,11 @@ export default function SubCategoriesPage() {
     fetchData();
   }
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    void (async () => {
+      await fetchData();
+    })();
+  }, []);
 
   const visibleCount = settings.filter((s) => s.showInHome && s.category !== "__config__").length;
 
@@ -108,14 +114,15 @@ export default function SubCategoriesPage() {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ category: cat.category, subCategory: cat.name }),
+      body: JSON.stringify({ category: cat.category || cat.name, subCategory: cat.name }),
     });
     if (!res.ok) return toast.error("حدث خطأ");
     const { showInHome } = await res.json();
+    const catKey = cat.category || cat.name;
     setSettings((prev) => {
-      const exists = prev.find((s) => s.category === cat.category && s.subCategory === cat.name);
-      if (exists) return prev.map((s) => s.category === cat.category && s.subCategory === cat.name ? { ...s, showInHome } : s);
-      return [...prev, { category: cat.category, subCategory: cat.name, showInHome, order: 0 }];
+      const exists = prev.find((s) => s.category === catKey && s.subCategory === cat.name);
+      if (exists) return prev.map((s) => s.category === catKey && s.subCategory === cat.name ? { ...s, showInHome } : s);
+      return [...prev, { category: catKey, subCategory: cat.name, showInHome, order: 0 }];
     });
     toast.success(showInHome ? "سيظهر في الرئيسية ✅" : "تم الإخفاء من الرئيسية");
   }
@@ -125,12 +132,13 @@ export default function SubCategoriesPage() {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ category: cat.category, subCategory: cat.name, order }),
+      body: JSON.stringify({ category: cat.category || cat.name, subCategory: cat.name, order }),
     });
     setSettings((prev) => {
-      const exists = prev.find((s) => s.category === cat.category && s.subCategory === cat.name);
-      if (exists) return prev.map((s) => s.category === cat.category && s.subCategory === cat.name ? { ...s, order } : s);
-      return [...prev, { category: cat.category, subCategory: cat.name, showInHome: false, order }];
+      const catKey = cat.category || cat.name;
+      const exists = prev.find((s) => s.category === catKey && s.subCategory === cat.name);
+      if (exists) return prev.map((s) => s.category === catKey && s.subCategory === cat.name ? { ...s, order } : s);
+      return [...prev, { category: catKey, subCategory: cat.name, showInHome: false, order }];
     });
   }
 
@@ -183,7 +191,7 @@ export default function SubCategoriesPage() {
 
       <div className="flex items-start gap-1.5 text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-sm mb-4">
         <span className="shrink-0">⚠️</span>
-        <span>لعرض منتجات تصنيف فرعي في الصفحة الرئيسية، فعّل خيار <span className="font-bold">"عرض في الرئيسية"</span> بجانبه، ثم حدد <span className="font-bold">الترتيب</span> الذي تريده — الرقم الأصغر يظهر أولاً. الحد الأقصى {max} تصنيفات — لزيادة العدد اذهب لـ <a href="/admin/category-items" className="font-bold underline hover:text-amber-800">إعدادات التصنيفات</a>.</span>
+        <span>لعرض منتجات تصنيف فرعي في الصفحة الرئيسية، فعّل خيار <span className="font-bold">&ldquo;عرض في الرئيسية&rdquo;</span> بجانبه، ثم حدد <span className="font-bold">الترتيب</span> الذي تريده — الرقم الأصغر يظهر أولاً. الحد الأقصى {max} تصنيفات — لزيادة العدد اذهب لـ <Link href="/admin/category-items" className="font-bold underline hover:text-amber-800">إعدادات التصنيفات</Link>.</span>
       </div>
 
       <div className="bg-white rounded-xl shadow overflow-hidden">
@@ -252,7 +260,7 @@ export default function SubCategoriesPage() {
                     <td className="px-2 sm:px-4 py-3">
                       <div className="flex items-center gap-2 sm:gap-3">
                         <button
-                          onClick={() => { setEditItem(cat); setEditName(cat.name); setEditCategory(cat.category); }}
+                          onClick={() => { setEditItem(cat); setEditName(cat.name ?? ""); setEditCategory(cat.category ?? ""); }}
                           className="text-blue-500 hover:text-blue-700" title="تعديل"
                         >
                           <EditIcon />
