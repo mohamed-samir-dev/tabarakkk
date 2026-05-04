@@ -84,29 +84,6 @@ export default function BannerSlider({ images }: { images: string[] }) {
               </motion.div>
             </AnimatePresence>
 
-            {/* Navigation arrows - always visible */}
-            {images.length > 1 && (
-              <>
-                <button
-                  onClick={() => goTo(current + 1, 1)}
-                  aria-label="التالي"
-                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center cursor-pointer bg-white/30 backdrop-blur-md border border-white/40 hover:bg-white/50 active:scale-90 transition-all duration-200"
-                >
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white drop-shadow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => goTo(current - 1, -1)}
-                  aria-label="السابق"
-                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center cursor-pointer bg-white/30 backdrop-blur-md border border-white/40 hover:bg-white/50 active:scale-90 transition-all duration-200"
-                >
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white drop-shadow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </>
-            )}
 
             {/* Progress bar */}
             {images.length > 1 && (

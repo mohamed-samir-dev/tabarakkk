@@ -12,10 +12,11 @@ interface BannerCardProps {
   onToggle: (index: number) => void;
   onDeleteImage: (index: number) => void;
   onDeleteSlot: (index: number) => void;
+  isDragging?: boolean;
 }
 
 export default function BannerCard({
-  banner, index, isLoading, inputRef, onUpload, onToggle, onDeleteImage, onDeleteSlot,
+  banner, index, isLoading, inputRef, onUpload, onToggle, onDeleteImage, onDeleteSlot, isDragging,
 }: BannerCardProps) {
   const hasImage = !!banner.url;
 
@@ -29,6 +30,15 @@ export default function BannerCard({
         !banner.active && hasImage ? "opacity-60" : ""
       } ${hasImage ? "border-indigo-100" : "border-gray-100"}`}
     >
+      {/* Drag Handle */}
+      <div className="absolute top-3 left-3 z-10 cursor-grab active:cursor-grabbing" title="اسحب لتغيير الترتيب">
+        <span className={`flex items-center justify-center w-8 h-8 rounded-full bg-white/80 shadow text-gray-400 hover:text-indigo-500 transition ${isDragging ? "text-indigo-500" : ""}`}>
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
+          </svg>
+        </span>
+      </div>
+
       {/* Status Badge */}
       <div className="absolute top-3 right-3 z-10">
         <span className={`text-xs font-bold px-2.5 py-1 rounded-full shadow-sm ${

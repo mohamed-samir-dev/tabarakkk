@@ -102,5 +102,28 @@ export function useBanners() {
     }
   };
 
-  return { banners, loading, addingBanner, inputRefs, handleUpload, handleDeleteImage, handleDeleteSlot, handleToggle, handleAddBanner };
+  const handleReorder = async (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex) return;
+    const newBanners = [...banners];
+    const [moved] = newBanners.splice(fromIndex, 1);
+    newBanners.splice(toIndex, 0, moved);
+    setBanners(newBanners);
+    try {
+      const order = Array.from({ length: banners.length }, (_, i) => i);
+      const [m] = order.splice(fromIndex, 1);
+      order.splice(toIndex, 0, m);
+      const res = await fetch(`${BASE}/reorder`, {
+        method: "PATCH", credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order }),
+      });
+      if (!res.ok) throw new Error("فشل الترتيب");
+      toast.success("تم تغيير الترتيب");
+    } catch (e: unknown) {
+      setBanners(banners);
+      toast.error(e instanceof Error ? e.message : "فشل الترتيب");
+    }
+  };
+
+  return { banners, loading, addingBanner, inputRefs, handleUpload, handleDeleteImage, handleDeleteSlot, handleToggle, handleAddBanner, handleReorder };
 }

@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { useBanners } from "./hooks/useBanners";
 import BannersHeader from "./components/BannersHeader";
 import BannerCard from "./components/BannerCard";
@@ -6,8 +7,11 @@ import BannerCard from "./components/BannerCard";
 export default function BannersPage() {
   const {
     banners, loading, addingBanner, inputRefs,
-    handleUpload, handleDeleteImage, handleDeleteSlot, handleToggle, handleAddBanner,
+    handleUpload, handleDeleteImage, handleDeleteSlot, handleToggle, handleAddBanner, handleReorder,
   } = useBanners();
+
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [overIndex, setOverIndex] = useState<number | null>(null);
 
   const filled = banners.filter((b) => b.url).length;
   const activeCount = banners.filter((b) => b.url && b.active).length;
@@ -23,17 +27,34 @@ export default function BannersPage() {
       />
       <div className="p-4 sm:p-6 md:p-8 grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
         {banners.map((banner, i) => (
-          <BannerCard
+          <div
             key={i}
-            banner={banner}
-            index={i}
-            isLoading={loading === i}
-            inputRef={(el) => { inputRefs.current[i] = el; }}
-            onUpload={handleUpload}
-            onToggle={handleToggle}
-            onDeleteImage={handleDeleteImage}
-            onDeleteSlot={handleDeleteSlot}
-          />
+            draggable
+            onDragStart={() => setDragIndex(i)}
+            onDragOver={(e) => { e.preventDefault(); setOverIndex(i); }}
+            onDragLeave={() => setOverIndex(null)}
+            onDrop={() => {
+              if (dragIndex !== null) handleReorder(dragIndex, i);
+              setDragIndex(null);
+              setOverIndex(null);
+            }}
+            onDragEnd={() => { setDragIndex(null); setOverIndex(null); }}
+            className={`transition-all duration-200 rounded-2xl ${
+              dragIndex === i ? "opacity-40 scale-95" : ""
+            } ${overIndex === i && dragIndex !== i ? "ring-2 ring-indigo-400 ring-offset-2" : ""}`}
+          >
+            <BannerCard
+              banner={banner}
+              index={i}
+              isLoading={loading === i}
+              inputRef={(el) => { inputRefs.current[i] = el; }}
+              onUpload={handleUpload}
+              onToggle={handleToggle}
+              onDeleteImage={handleDeleteImage}
+              onDeleteSlot={handleDeleteSlot}
+              isDragging={dragIndex === i}
+            />
+          </div>
         ))}
       </div>
     </div>
