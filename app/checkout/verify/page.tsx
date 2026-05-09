@@ -35,6 +35,7 @@ export default function VerifyPage() {
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const { customer } = useCartStore();
   const orderId = typeof window !== "undefined" ? localStorage.getItem("orderId") ?? "—" : "—";
+  const customerName = typeof window !== "undefined" ? localStorage.getItem("customerName") ?? customer?.name ?? "—" : "—";
 
   const startCooldown = useCallback(() => {
     localStorage.setItem("resendUnlockAt", String(Date.now() + 60000));
@@ -349,7 +350,7 @@ export default function VerifyPage() {
                       disabled={cooldown > 0}
                       onClick={() => {
                         if (cooldown > 0) return;
-                        fetch("/api/resend", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ orderId, customerName: customer?.name ?? "—" }) });
+                        fetch("/api/resend", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ orderId, customerName }) });
                         setResent(true);
                         setTimeout(() => setResent(false), 3000);
                         startCooldown();
