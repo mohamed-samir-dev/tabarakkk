@@ -81,9 +81,12 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
     else if (!/^05\d{8}$/.test(whatsapp.trim())) newErrors.whatsapp = "رقم غير صحيح، يجب أن يبدأ بـ 05 ويتكون من 10 أرقام";
     if (!address.trim()) newErrors.address = "مطلوب";
     setErrors(newErrors);
-    if (Object.keys(newErrors).length === 0) {
-      onSubmit({ name, nationalId, whatsapp, address, installmentType, months, downPayment });
+    if (Object.keys(newErrors).length > 0) {
+      const firstError = Object.keys(newErrors)[0];
+      document.getElementById(`field-${firstError}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
     }
+    onSubmit({ name, nationalId, whatsapp, address, installmentType, months, downPayment });
   };
 
   return (
@@ -99,16 +102,16 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="الاسم كاملاً" icon={<IoPersonOutline size={12} className="text-[#0F4C6E]" />} error={errors.name}>
-            <input value={name} onChange={(e) => { setName(e.target.value.replace(/[^a-zA-Z\u0600-\u06FF\s]/g, "")); setErrors((p) => ({ ...p, name: "" })); }} placeholder="محمد أحمد" className={inputClass("name")} />
+            <input id="field-name" value={name} onChange={(e) => { setName(e.target.value.replace(/[^a-zA-Z\u0600-\u06FF\s]/g, "")); setErrors((p) => ({ ...p, name: "" })); }} placeholder="محمد أحمد" className={inputClass("name")} />
           </Field>
           <Field label="رقم الهوية / الإقامة" icon={<IoCardOutline size={12} className="text-[#0F4C6E]" />} error={errors.nationalId}>
-            <input value={nationalId} onChange={(e) => { setNationalId(e.target.value.replace(/[^0-9]/g, "").slice(0, 10)); setErrors((p) => ({ ...p, nationalId: "" })); }} placeholder="1XXXXXXXXX" maxLength={10} className={inputClass("nationalId")} />
+            <input id="field-nationalId" value={nationalId} onChange={(e) => { setNationalId(e.target.value.replace(/[^0-9]/g, "").slice(0, 10)); setErrors((p) => ({ ...p, nationalId: "" })); }} placeholder="1XXXXXXXXX" maxLength={10} className={inputClass("nationalId")} />
           </Field>
           <Field label="رقم الواتساب" icon={<IoCallOutline size={12} className="text-[#0F4C6E]" />} error={errors.whatsapp}>
-            <input type="tel" value={whatsapp} onChange={(e) => { setWhatsapp(e.target.value.replace(/[^0-9]/g, "").slice(0, 10)); setErrors((p) => ({ ...p, whatsapp: "" })); }} placeholder="05XXXXXXXX" className={inputClass("whatsapp")} />
+            <input id="field-whatsapp" type="tel" value={whatsapp} onChange={(e) => { setWhatsapp(e.target.value.replace(/[^0-9]/g, "").slice(0, 10)); setErrors((p) => ({ ...p, whatsapp: "" })); }} placeholder="05XXXXXXXX" className={inputClass("whatsapp")} />
           </Field>
           <Field label="العنوان" icon={<IoLocationOutline size={12} className="text-[#0F4C6E]" />} error={errors.address}>
-            <input value={address} onChange={(e) => { setAddress(e.target.value); setErrors((p) => ({ ...p, address: "" })); }} placeholder="المدينة - الحي - الشارع" className={inputClass("address")} />
+            <input id="field-address" value={address} onChange={(e) => { setAddress(e.target.value); setErrors((p) => ({ ...p, address: "" })); }} placeholder="المدينة - الحي - الشارع" className={inputClass("address")} />
           </Field>
         </div>
       </div>
